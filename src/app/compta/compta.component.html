@@ -1,0 +1,419 @@
+<html>
+    
+    <body  id="body-pd">
+        <header class="header" id="header">
+            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
+			
+           <div class="header_user">
+        <div class="header_text">Meden Belkasem</div>
+        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+    </div>
+        </header>
+
+        <div class="l-navbar" id="nav-bar">
+            <nav class="nav">
+                <div> 
+                    <a href="#" class="nav_logo"> 
+                        <i class='bx bx-layer nav_logo-icon'></i> 
+                        <span class="nav_logo-name">CKRF</span> 
+                    </a>
+                    <div class="nav_list"> 
+                       
+                        <a href="#" class="nav_link active"> 
+                            <i class='bx bx-user nav_icon'></i> 
+                            <span class="nav_name">Patients</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calendar nav_icon'></i> 
+                            <span class="nav_name">Rendez-Vous</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calculator nav_icon'></i> 
+                            <span class="nav_name">Comptabilité</span> 
+                        </a> 
+                        
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                            <span class="nav_name">Statistique</span> 
+                        </a> 
+                        <a href="#" class="nav_link "> 
+                          <i class='bx bx-grid-alt nav_icon'></i> 
+                          <span class="nav_name">RH</span> 
+                      </a> 
+                        <a href="#" class="nav_link"> 
+                          <i class='bx bx-certification nav_icon'></i> 
+                          <span class="nav_name">Administration</span> 
+                      </a> 
+                    </div>
+                </div> 
+                <a href="#" class="nav_link"> 
+                    <i class='bx bx-log-out nav_icon'></i> 
+                    <span class="nav_name">Déconnexion</span> 
+                </a>
+            </nav>
+        </div>
+
+               <!--Container Main start-->
+               <div class="height-100vh bg-light">
+                <div class="btm"><br></div>
+               
+                <div class="container ">
+                    <!-- For demo purpose -->
+                    
+                    <div class="bg-white rounded shadow mb-5">
+                      <!-- Lined tabs-->
+                      <ul id="myTab2" role="tablist" class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center">
+                        <li class="nav-item flex-sm-fill">
+                          <a id="seances" data-toggle="tab" (click)="showTab('seances')" role="tab" aria-controls="home2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 active">Les Séances</a>
+                        </li>
+                        <li class="nav-item flex-sm-fill">
+                          <a id="paiements" data-toggle="tab" (click)="showTab('paiements')" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 ">les Paiements</a>
+                        </li>
+                        
+                      </ul>
+                      <div id="myTab2Content" class="tab-content">
+
+                        <div id="seances" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show active  ">
+                            <div class="btm"><br></div>
+                            <div class="card">
+                                <div class="row">
+                                    <div class="col-md-4"> <label>Date Début</label> <input [(ngModel)]="this.stardate" type="date" class="form-control"> </div>
+                                    <div class="col-md-4"> <label>Date Fin</label> <input [(ngModel)]="this.enddate" type="date" class="form-control"> </div>
+                                    <div class="col-md-4"> <label style="height: 47px;"> </label><button (click)="chercherseances()" class="btn btn-primary  w-20"><i class="fa fa-search ml-2"></i></button> </div>
+                                </div>
+                            </div>
+
+
+                            
+
+  <div class="main-content">
+    <div class="container ">
+      <!-- Table -->
+<div class="row">
+
+        <div class="col">
+          <div class="card shadow">
+            <div class="card-header border-0">
+              <h3 class="mb-0">Les Séances</h3>
+            </div>
+            <div  *ngIf="inchargement" class="chargcontainer">
+              <div class="image-container">
+                <img [src]="charg"  >
+              </div>
+            </div> 
+            <div  *ngIf="!inchargement" class="table-responsive">
+              <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr class="entete">
+                    <th scope="col">Patient</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Détails</th>
+                    
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let seance of seances | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}">
+                    <th scope="row">
+                      <div class="media align-items-center">
+                        <a href="#" class="avatar rounded-circle mr-3">
+                          <img alt="Image placeholder"src="assets/profiles/img{{seance.spid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                        </a>
+                        <div class="media-body">
+                          <span class="mb-0 text-sm"><a [routerLink]="['/profile', seance.spid]" target="_blank">{{seance.pnom }}</a></span>
+                        </div>
+                      </div>
+                    </th>
+                    <td>
+                     
+                      <span class="badge badge-dot mr-4">
+                        {{seance.sdate| date:'dd'}}-{{getMonthName(seance.sdate| date:'MM')}}-{{seance.sdate| date:'yyyy'}}
+                      </span>  
+                    </td>
+                    <td>
+                      <ng-container *ngFor="let detail of seance.details; let i = index">
+                      <span class="badge badge-dot mr-4">
+                        <i class="bg-success"></i> {{ gettraitById(detail.split(',')[0]) }} [{{ detail.split(',')[1] }}]
+                      </span>
+                      <br>
+                      </ng-container>
+                    </td>
+            
+                  </tr>
+          
+                  
+                </tbody>
+              </table>
+              <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+ 
+
+
+
+                        </div>
+                        <div id="paiements" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show   ">
+                            <div class="btm"><br></div>
+                            <div class="card">
+                                <div class="row">
+                                    <div class="col-md-3"> <label>Date Début</label> <input [(ngModel)]="this.stardate" type="date" class="form-control"> </div>
+                                    <div class="col-md-3"> <label>Date Fin</label> <input [(ngModel)]="this.enddate" type="date" class="form-control"> </div>
+                                    <div class="col-md-3"> <label style="height: 47px;"> </label><button (click)="chercher()" class="btn btn-primary  w-20"><i class="fa fa-search ml-2"></i></button> </div>
+                                    <div *ngIf="typepaiement=='in'"   class="col-md-1"> <label style="height: 47px;"> </label><button (click)="changetype('out')" class="btn btn-primary in w-20"><i class="fa fa-long-arrow-left ml-2"></i></button> </div>
+                                    <div *ngIf="typepaiement=='out'"  class="col-md-1"> <label style="height: 47px;"> </label><button (click)="changetype('in')" class="btn btn-primary out w-20"><i class="fa fa-long-arrow-right ml-2"></i></button> </div>
+                                    <div class="col-md-2"> <label > Mode Paiement</label> <select [(ngModel)]="modeselected"  (ngModelChange)="filtreretat($event)"    >
+                                        <option  value="Tous" >Tous</option>
+                                        <option *ngFor="let mode of modepaie"  value="{{mode.mpid}}">{{mode.mpnm}}</option>  
+                                      </select></div>
+                                </div>
+                            </div>
+
+                              <!-- <select    class="dropdown-toggle">
+                                <option  class="dropdown-item" ></option>
+                                <option class="dropdown-item">Masculin</option>
+                              </select> -->
+                                             <button  *ngIf="typepaiement=='out'"  (click)="tempaddpaie(templateaddpaie)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                                             <div class="main-content">
+                                              <div class="container ">
+                                                <!-- Table -->
+                                          <div class="row">
+                                          
+                                                  <div class="col">
+                                                    <div class="card shadow">
+                                                      <div class="card-header border-0">
+                                                        <h3 class="mb-0">Les Paiements</h3>
+                                                      </div>
+                                                      <div  *ngIf="inchargement" class="chargcontainer">
+                                                        <div class="image-container">
+                                                          <img [src]="charg"  >
+                                                        </div>
+                                                      </div> 
+                                                      <div *ngIf="!inchargement" class="table-responsive">
+                                                        <table class="table align-items-center table-flush">
+                                                          <thead class="thead-light">
+                                                            <tr class="entete">
+                                                              <th scope="col">Date</th>
+                                                              <th *ngIf="typepaiement=='in'" scope="col">Patient</th>
+                                                              <th *ngIf="typepaiement=='out'" scope="col">Description</th>
+                                                              <th  scope="col">DÉTAILS</th>
+                                                              <th class="text-center"  scope="col">Actions</th>
+                                                              
+                                                             
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                            <tr *ngFor="let paie of paiementfiltrer | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}">
+                                                              <td>
+                                                                <span class="badge badge-dot mr-4">
+                                                                {{paie.pdate| date:'dd'}}-{{getMonthName(paie.pdate| date:'MM')}}-{{paie.pdate| date:'yyyy'}}
+                                                              </span>
+                                                              </td>
+                                                              <th scope="row">
+                                                                <div class="media align-items-center">
+                                                                  <a href="#" class="avatar rounded-circle mr-3">
+                                                                    <img alt="Image placeholder"src="assets/profiles/img{{paie.ppid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                                                  </a>
+                                                                  <div class="media-body">
+                                                                    <span *ngIf="typepaiement=='in'" class="mb-0 text-sm"><a [routerLink]="['/profile', paie.ppid]" target="_blank">{{paie.pnom }}</a></span>
+                                                                    <span *ngIf="typepaiement=='out'" class="mb-0 text-sm"><a >{{paie.pdesc }}</a></span>
+                                                                  </div>
+                                                                </div>
+                                                              </th>
+                                                              
+                                                              <td>
+                                                               
+                                                                <span class="badge badge-dot mr-4">
+                                                                  <i class="bg-warning"></i> {{paie.pmnt}} UM
+                                                                </span>
+                                                                <br>
+                                                                <span class="badge badge-dot mr-4">
+                                                                  <i class="bg-warning"></i> {{getmodeById(paie.pmode)}}
+                                                                </span>
+                                                               
+                                                              </td>
+                                                              <td>
+                                                                <div class="primary-btn">
+                                                                 
+                                                                  <button id="editButton" (click)="tempmodpaie(templatemodpaie,paie.pid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                                                  <button id="deleteButton" (click)="delpaie(paie.pid)"  class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                                                </div>
+                                                            </td>
+                                                            </tr>
+                                                    
+                                                            
+                                                          </tbody>
+                                                        </table>
+                                                        <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+                                          
+                                                      </div>
+                                                      
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              
+                                              </div>
+                                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+               </div>
+
+               <ng-template #templateaddpaie>
+                <div class="modal-header">
+                  <h4 class="modal-title pull-left">Ajouter Paiement</h4>
+                  <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                    <span aria-hidden="true" class="visually-hidden">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                 
+                      
+                        <div class="c1">
+                          <form [formGroup]="formAddpaie" (ngSubmit)="addpaie()" >
+                            <div class="row">
+                                <div class="col" >
+                                  <label class="labelmod">Description <span>*</span></label>
+                                  <input  class="input"   type="text" formControlName="DESC" >
+                                </div>
+                                <div class="col" >
+                                 
+                     
+                                </div>
+                                  </div>
+                            <div class="row">
+                          <div class="col" >
+                            <label class="labelmod" for="Nom">Date <span>*</span></label>
+                            <input  class="input"   type="date" formControlName="DT" >
+                          </div>
+                          <div class="col" >
+                            <label class="labelmod" >Mode de paiement<span>*</span> </label>
+                            <select    formControlName="MODE" >
+                                <option *ngFor="let mode of modepaie"  value="{{mode.mpid}}">{{mode.mpnm}}</option>  
+                            </select>
+               
+                          </div>
+                            </div>
+                            <div class="row">
+                              
+                    
+                              <div class="col" >
+                                <div class="col" >
+                                  <label class="labelmod" for="Nom">Montant <span>*</span></label>
+                                  <input  class="input"   type="number" formControlName="MNT" >
+                                </div>
+                          </div>
+                          <div class="col" >
+                            <label class="labelmod">Remarque  </label>
+                            <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
+                      </div>
+                         
+                        </div>
+                       
+                           
+                    
+                    
+                           
+                      <br>
+                      
+                 
+              
+                            <div  *ngIf="formAddpaie.invalid">
+                              <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                            </div>
+                            <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+                           
+                           
+                       
+              
+                      
+                          </form>
+              
+                  </div>
+                  </div>
+                  </ng-template>  
+        <ng-template #templatemodpaie>
+          <div class="modal-header">
+            <h4 class="modal-title pull-left">Modifier Paiement</h4>
+            <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+              <span aria-hidden="true" class="visually-hidden">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            
+                
+                  <div class="c1">
+                    <form [formGroup]="formAddpaie" (ngSubmit)="modpaie()" >
+                        <div *ngIf="typepaiement=='out'" class="row" >
+                            <div class="col" >
+                              <label class="labelmod">Description <span>*</span></label>
+                              <input  class="input"   type="text" formControlName="DESC" >
+                            </div>
+                            <div class="col" >
+                             
+                 
+                            </div>
+                              </div>
+                      <div class="row">
+                    <div class="col" >
+                      <label class="labelmod" for="Nom">Date <span>*</span></label>
+                      <input  class="input"   type="date" formControlName="DT" >
+                    </div>
+                    <div class="col" >
+                      <label class="labelmod" >Mode de paiement<span>*</span> </label>
+                      <select    formControlName="MODE" >
+                        <option *ngFor="let mode of modepaie"  value="{{mode.mpid}}">{{mode.mpnm}}</option>  
+                      </select>
+          
+                    </div>
+                      </div>
+                      <div class="row">
+                        
+              
+                        <div class="col" >
+                          <div class="col" >
+                            <label class="labelmod" for="Nom">Montant <span>*</span></label>
+                            <input  class="input"   type="number" formControlName="MNT" >
+                          </div>
+                    </div>
+                    <div class="col" >
+                        <label class="labelmod">Notes  </label>
+                        <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
+                  </div>
+                    
+                  </div>
+                  
+                      
+              
+              
+                      
+                <br>
+                
+            
+        
+                      <div  *ngIf="formAddpaie.invalid">
+                        <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                      </div>
+                      <input type="submit" [disabled]="buttondisable==true"  value="Modifier">
+                      
+                      
+                  
+        
+                
+                    </form>
+        
+            </div>
+            </div>
+            </ng-template>  
+            </body>
+
+
+            </html>

@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@font-face {
+    font-family: "rbt";
+    src: local("rbt"), url(./assets/fonts/NeoSansStd-Regular.otf) format("truetype");
+}

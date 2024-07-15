@@ -3,16 +3,40 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from "@ng-select/ng-select";
+import { PatientsComponent } from './patients/patients.component';
+import { EventsComponent } from './events/events.component';
+import { ComptaComponent } from './compta/compta.component';
+import { ParametresComponent } from './parametres/parametres.component'; 
+import { HttpClientModule } from '@angular/common/http';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { DatePipe } from '@angular/common'
+
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ProfileComponent,
+    PatientsComponent,
+    EventsComponent,
+    ComptaComponent,
+    ParametresComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgSelectModule,
+    HttpClientModule,
+    NgxPaginationModule,
+    ModalModule.forRoot() // Add this line to your imports
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

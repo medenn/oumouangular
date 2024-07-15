@@ -1,0 +1,517 @@
+<html>
+    
+    <body  id="body-pd">
+        <header class="header" id="header">
+            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
+			
+           <div class="header_user">
+        <div class="header_text">Meden Belkasem</div>
+        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+    </div>
+        </header>
+
+        <div class="l-navbar" id="nav-bar">
+            <nav class="nav">
+                <div> 
+                    <a href="#" class="nav_logo"> 
+                        <i class='bx bx-layer nav_logo-icon'></i> 
+                        <span class="nav_logo-name">CKRF</span> 
+                    </a>
+                    <div class="nav_list"> 
+                       
+                        <a href="#" class="nav_link active"> 
+                            <i class='bx bx-user nav_icon'></i> 
+                            <span class="nav_name">Patients</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calendar nav_icon'></i> 
+                            <span class="nav_name">Rendez-Vous</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calculator nav_icon'></i> 
+                            <span class="nav_name">Comptabilité</span> 
+                        </a> 
+                        
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                            <span class="nav_name">Statistique</span> 
+                        </a> 
+                        <a href="#" class="nav_link "> 
+                          <i class='bx bx-grid-alt nav_icon'></i> 
+                          <span class="nav_name">RH</span> 
+                      </a> 
+                        <a href="#" class="nav_link"> 
+                          <i class='bx bx-certification nav_icon'></i> 
+                          <span class="nav_name">Administration</span> 
+                      </a> 
+                    </div>
+                </div> 
+                <a href="#" class="nav_link"> 
+                    <i class='bx bx-log-out nav_icon'></i> 
+                    <span class="nav_name">Déconnexion</span> 
+                </a>
+            </nav>
+        </div>
+
+               <!--Container Main start-->
+               <div class="height-100 bg-light">
+
+                <div class="btm"><br></div>
+               
+                <div class="container ">
+                    <!-- For demo purpose -->
+                    
+                    <div class="p-5 bg-white rounded shadow mb-5">
+                      <!-- Lined tabs-->
+                      <ul id="myTab2" role="tablist" class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center">
+                        <li class="nav-item flex-sm-fill">
+                          <a id="traitements" data-toggle="tab" (click)="showTab('traitements')" role="tab" aria-controls="home2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 active">Les Traitements</a>
+                        </li>
+                        <li class="nav-item flex-sm-fill">
+                          <a id="assurances" data-toggle="tab" (click)="showTab('assurances')" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 ">Couverture d'Assurance</a>
+                        </li>
+                        <li class="nav-item flex-sm-fill">
+                          <a id="fonctions" data-toggle="tab" (click)="showTab('fonctions')" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 ">Fonctions</a>
+                        </li>
+                        
+                      </ul>
+                      <div id="myTab2Content" class="tab-content">
+
+                        <div id="traitements" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show active  ">
+                            <div class="btm"><br></div>
+                            <button  (click)="tempaddTrai(templateaddtrai)"   class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                            <div class="event-schedule-area-two bg-color ">
+              
+                                <div class="container">
+                                    
+                                    <!-- row end-->
+                                    <div class="row">
+                                        
+                                            
+                                            <div class="tab-content" id="myTabContent">
+                                            
+                                    <br>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" scope="col">Nom</th>
+                                            <th class="text-center" scope="col">Tarif de la Séance</th>
+                                            <th class="text-center"  scope="col">Actions</th>
+                                           
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let trait of traits | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                           
+                                            
+                                            <td>
+                                                <div class="event-wrap">
+                                                    <h3><a>{{trait?.tnm}}</a></h3>   
+                                                </div>
+                                            </td>
+                                            <td>
+                                              <div class="event-wrap">
+                                                  <h3><a>{{trait?.tmnt}}</a></h3>   
+                                              </div>
+                                          </td>
+                                            <td>
+                                                <div class="primary-btn">
+                                                 
+                                                  <button  (click)="tempmodTrai(templatemodtrai,trait?.tid)"  id="editButton"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                                </div>
+                                            </td>
+                                         
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                                <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+
+                            </div>
+                        </div></div>
+                    </div>
+                </div>
+                        </div>
+
+                        <div id="assurances" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show  ">
+                            <div class="btm"><br></div>
+                            <button (click)="tempaddAssur(templateaddassurance)"   class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                            <div class="event-schedule-area-two bg-color ">
+              
+                                <div class="container">
+                                    
+                                    <!-- row end-->
+                                    <div class="row">
+                                        
+                                            
+                                            <div class="tab-content" id="myTabContent">
+                                            
+                                    <br>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" scope="col">Nom</th>
+                                            <th class="text-center" scope="col">Tarif de la Séance</th>
+                                            <th class="text-center" scope="col">Taux de Remboursement</th>
+                                            <th class="text-center"  scope="col">Actions</th>
+                                           
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr  *ngFor="let asr of assurs | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                           
+                                            
+                                            <td>
+                                                <div class="event-wrap">
+                                                    <h3><a>{{asr?.asnm}}</a></h3>
+                                                  
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="event-wrap">
+                                                  
+                                                    <h3><a>{{asr?.asmnt}}</a></h3>
+                                            
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="event-wrap">
+                                                    <h3><a>{{asr?.aspr}}</a></h3>
+    
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="primary-btn">
+                                                 
+                                                  <button id="editButton" (click)="tempmodModAssur(templatemodassurance,asr?.asid)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                                </div>
+                                            </td>
+                                         
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                                <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+
+                            </div>
+                        </div></div>
+                    </div>
+                </div>
+                        </div>
+                        <div id="fonctions" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show  ">
+                          <div class="btm"><br></div>
+                          <button (click)="tempaddfnct(templateaddfonct)"   class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                          <div class="event-schedule-area-two bg-color ">
+            
+                              <div class="container">
+                                  
+                                  <!-- row end-->
+                                  <div class="row">
+                                      
+                                          
+                                          <div class="tab-content" id="myTabContent">
+                                          
+                                  <br>
+                          <div class="table-responsive">
+                              <table class="table">
+                                  <thead>
+                                      <tr>
+                                          <th class="text-center" scope="col">Nom</th>
+                                          <th class="text-center"  scope="col">Actions</th>
+                                         
+                                          
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr  *ngFor="let fn of foncts | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}"  class="inner-box">
+                                         
+                                          
+                                          <td>
+                                              <div class="event-wrap">
+                                                  <h3><a>{{fn?.fnm}}</a></h3>
+                                                
+                                              </div>
+                                          </td>
+                                         
+                                          
+                                          <td>
+                                              <div class="primary-btn">
+                                               
+                                                <button id="editButton" (click)="tempmodfnct(templatemodfnc,fn?.fid)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                              </div>
+                                          </td>
+                                       
+                                      </tr>
+                                      
+                                  </tbody>
+                              </table>
+                              <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+
+                          </div>
+                      </div></div>
+                  </div>
+              </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+		</div>
+        <ng-template #templateaddtrai>
+            <div class="modal-header">
+              <h4 class="modal-title pull-left">Ajouter Traitement</h4>
+              <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                <span aria-hidden="true" class="visually-hidden">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+             
+                  
+                    <div class="c1">
+                      <form [formGroup]="formAddTrait" (ngSubmit)="addtrait()" >
+                        <div class="row">
+                      <div class="col" >
+                        <label class="labelmod" for="Nom">Nom <span>*</span></label>
+                        <input  class="input"   type="text" formControlName="NMT" >
+                      </div>
+                      <div class="col" >
+                        <label class="labelmod" for="Nom">Tarif de la Séance <span>*</span></label>
+                        <input  class="input"   type="number" formControlName="TA" >
+                      </div>
+                    
+                        </div>
+                     
+                  <br>
+   
+                        <div  *ngIf="formAddTrait.invalid">
+                          <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                        </div>
+                        <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+                       
+                       
+                   
+          
+                  
+                      </form>
+          
+              </div>
+              </div>
+              </ng-template>  
+    <ng-template #templatemodtrai>
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Modifier Traitement</h4>
+        <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="c1">
+            <form [formGroup]="formAddTrait" (ngSubmit)="modtrait()" >
+              <div class="row">
+            <div class="col" >
+              <label class="labelmod" for="Nom">Nom <span>*</span></label>
+              <input  class="input"   type="text" formControlName="NMT" >
+            </div>
+            <div class="col" >
+              <label class="labelmod" for="Nom">Tarif de la Séance <span>*</span></label>
+              <input  class="input"   type="number" formControlName="TA" >
+            </div>
+              </div>
+           
+        <br>
+
+              <div  *ngIf="formAddTrait.invalid">
+                <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+              </div>
+              <input type="submit" [disabled]="buttondisable==true"  value="Modifier">
+             
+             
+         
+
+            
+                </form>
+    
+        </div>
+        </div>
+        </ng-template>  
+        <ng-template #templateaddassurance>
+            <div class="modal-header">
+              <h4 class="modal-title pull-left">Ajouter Couverture D'assurance</h4>
+              <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                <span aria-hidden="true" class="visually-hidden">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+             
+                  
+                    <div class="c1">
+                      <form [formGroup]="formAddAssur" (ngSubmit)="addAssur()" >
+                        <div class="row">
+                      <div class="col" >
+                        <label class="labelmod" for="Nom">Nom <span>*</span></label>
+                        <input  class="input"   type="text" formControlName="NMA" >
+                      </div>
+                      <div class="col" >
+                        <label class="labelmod" for="Nom">Tarif de la Séance <span>*</span></label>
+                        <input  class="input"   type="number" formControlName="TA" >
+                      </div>
+                    
+                        </div>
+
+                        <div class="row">
+                            <div class="col" >
+                              <label class="labelmod" for="Nom">Taux Remboursement<span>*</span></label>
+                              <input  class="input"   type="number" formControlName="PA" >
+                            </div>
+                            <div class="col" ></div>
+                          
+                              </div>
+                     
+                  <br>
+   
+                        <div  *ngIf="formAddAssur.invalid">
+                          <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                        </div>
+                        <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+                       
+                       
+                   
+          
+                  
+                      </form>
+          
+              </div>
+              </div>
+              </ng-template>  
+    <ng-template #templatemodassurance>
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Modifier Couverture D'assurance</h4>
+        <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="c1">
+            <form [formGroup]="formAddAssur" (ngSubmit)="modAssur()" >
+                <div class="row">
+              <div class="col" >
+                <label class="labelmod" for="Nom">Nom <span>*</span></label>
+                <input  class="input"   type="text" formControlName="NMA" >
+              </div>
+              <div class="col" >
+                <label class="labelmod" for="Nom">Tarif de la Séance <span>*</span></label>
+                <input  class="input"   type="number" formControlName="TA" >
+              </div>
+            
+                </div>
+
+                <div class="row">
+                    <div class="col" >
+                      <label class="labelmod" for="Nom">Taux Remboursement<span>*</span></label>
+                      <input  class="input"   type="number" formControlName="PA" >
+                    </div>
+                    <div class="col" ></div>
+                  
+                      </div>
+             
+          <br>
+
+                <div  *ngIf="formAddAssur.invalid">
+                  <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                </div>
+                <input type="submit" [disabled]="buttondisable==true"  value="Modifier">
+               
+               
+           
+                </form>
+    
+        </div>
+        </div>
+        </ng-template>  
+   
+        <ng-template #templateaddfonct>
+          <div class="modal-header">
+            <h4 class="modal-title pull-left">Ajouter Fonction</h4>
+            <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+              <span aria-hidden="true" class="visually-hidden">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+           
+                
+                  <div class="c1">
+                    <form [formGroup]="formAddFn" (ngSubmit)="addfonct()" >
+                      <div class="row">
+                    <div class="col2" >
+                      <label class="labelmod" for="Nom">Nom <span>*</span></label>
+                      <input  class="input"   type="text" formControlName="FNM" >
+                    </div>
+                    
+                  
+                      </div>
+                   
+                <br>
+ 
+                      <div  *ngIf="formAddFn.invalid">
+                        <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                      </div>
+                      <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+                     
+                     
+                 
+        
+                
+                    </form>
+        
+            </div>
+            </div>
+            </ng-template>  
+
+            <ng-template #templatemodfnc>
+              <div class="modal-header">
+                <h4 class="modal-title pull-left">Modifier Fonction</h4>
+                <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                  <span aria-hidden="true" class="visually-hidden">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+               
+                    
+                      <div class="c1">
+                        <form [formGroup]="formAddFn" (ngSubmit)="modfonct()" >
+                          <div class="row">
+                        <div class="col2" >
+                          <label class="labelmod" for="Nom">Nom <span>*</span></label>
+                          <input  class="input"   type="text" formControlName="FNM" >
+                        </div>
+                        
+                      
+                          </div>
+                       
+                    <br>
+     
+                          <div  *ngIf="formAddFn.invalid">
+                            <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                          </div>
+                          <input type="submit" [disabled]="buttondisable==true"  value="Modifier">
+                         
+                         
+                     
+            
+                    
+                        </form>
+            
+                </div>
+                </div>
+                </ng-template> 
+    </body>
+
+
+    </html>
+    

@@ -1,0 +1,259 @@
+<html>
+    
+    <body  id="body-pd">
+        <header class="header" id="header">
+            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
+			
+           <div class="header_user">
+        <div class="header_text">Meden Belkasem</div>
+        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+    </div>
+        </header>
+
+        <div class="l-navbar" id="nav-bar">
+            <nav class="nav">
+                <div> 
+                    <a href="#" class="nav_logo"> 
+                        <i class='bx bx-layer nav_logo-icon'></i> 
+                        <span class="nav_logo-name">CKRF</span> 
+                    </a>
+                    <div class="nav_list"> 
+                       
+                        <a href="#" class="nav_link active"> 
+                            <i class='bx bx-user nav_icon'></i> 
+                            <span class="nav_name">Patients</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calendar nav_icon'></i> 
+                            <span class="nav_name">Rendez-Vous</span> 
+                        </a> 
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-calculator nav_icon'></i> 
+                            <span class="nav_name">Comptabilité</span> 
+                        </a> 
+                        
+                        <a href="#" class="nav_link"> 
+                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                            <span class="nav_name">Statistique</span> 
+                        </a> 
+                        <a href="#" class="nav_link "> 
+                          <i class='bx bx-grid-alt nav_icon'></i> 
+                          <span class="nav_name">RH</span> 
+                      </a> 
+                        <a href="#" class="nav_link"> 
+                          <i class='bx bx-certification nav_icon'></i> 
+                          <span class="nav_name">Administration</span> 
+                      </a> 
+                    </div>
+                </div> 
+                <a href="#" class="nav_link"> 
+                    <i class='bx bx-log-out nav_icon'></i> 
+                    <span class="nav_name">Déconnexion</span> 
+                </a>
+            </nav>
+        </div>
+
+               <!--Container Main start-->
+               <div class="height-100 bg-light">
+		
+		
+                <div class="row d-flex justify-content-center mt-5 ">
+        
+                    <div class="col-md-8">
+                        
+        
+                        <div class="card1">
+        
+                          <div class="d-flex justify-content-between align-items-center">
+        
+                              <span class="font-weight-bold"></span>
+        
+                              <div class="d-flex flex-row">
+                                <button  type="button"    (click)="exporttoexcel()"  class="image"><img class="excel"   [src]="excel"  > </button>
+                               <button *ngIf="stpatient=='encours'"  (click)="stchanged('inactive')"class="btn btn-primary in w-20 "><span class="active">Actifs</span></button>
+                               <button   *ngIf="stpatient!='encours'"  (click)="stchanged('encours')"class="btn btn-primary out w-20 "><span class="active">Tous</span></button>
+    
+                                <button (click)="tempaddpatien(templateaddpatien)" class="btn btn-primary new"><i class="fa fa-plus"></i> Ajouter un nouveau patient</button>
+                                
+                              </div>
+                          
+                          </div>
+        
+                          <div class="mt-3 inputs">
+                              <i style="color:  #0d6efd;font-size: 18px;" class="fa fa-search "></i>
+                              <input type="text" [(ngModel)]="tel" (keyup.enter)="search()" class="form-control " placeholder="Rechercher par numéro de téléphone ...">
+                            
+                          </div>
+        
+        
+                          
+                        </div>
+        
+                    </div>
+                    
+        
+                  </div>
+                    
+                
+                
+                  <div class="btm"><br></div>
+                <!-- !-->
+                <div class="main-content">
+                
+                    <!-- Table -->
+              <div class="row">
+              
+                      <div class="col">
+                        <div class="card shadow">
+                          <div class="card-header border-0">
+                            <h3 class="mb-0">Liste De Patients</h3>
+                          </div>
+                          <div  *ngIf="inchargement" class="chargcontainer">
+                            <div class="image-container">
+                              <img [src]="charg"  >
+                            </div>
+                          </div> 
+                          <div *ngIf="!inchargement" class="table-responsive">
+                            <table class="table align-items-center table-flush">
+                              <thead class="thead-light">
+                                <tr class="entete">
+                                  <th scope="col">Nom /Prénom</th>
+                                  <th  scope="col">Telephone </th>
+                                  <th scope="col">Date Naissance </th>
+                                  <th  scope="col">Genre</th>
+                                  <th  scope="col">Adresse</th>
+                                  <th  scope="col">Date D'ajout</th>
+                                  <th class="text-center"  scope="col">Actions</th>
+                                  
+                                 
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let pat of listpatientFiltree| paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}">
+                                  
+                                  <th scope="row">
+                                    <div class="media align-items-center">
+                                      <a href="#" class="avatar rounded-circle mr-3">
+                                        <img alt="Image placeholder"src="assets/profiles/img{{pat.pid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                      </a>
+                                      <div class="media-body">
+                                        <span  class="mb-0 text-sm"><a [routerLink]="['/profile', pat.pid]" target="_blank">{{pat.pnom }}</a></span>
+                                       
+                                      </div>
+                                    </div>
+                                  </th>    
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                     {{pat.ptel}} 
+                                    </span>  
+                                  </td>
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                     {{pat.pnai| date:'dd-MM-yyyy'}}
+                                    </span>  
+                                  </td>
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                      {{pat.pgnr}}
+                                    </span>  
+                                  </td>
+                                
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                      {{pat.padrss}} 
+                                    </span>  
+                                  </td>
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                      {{pat.pdaj | date:'dd-MM-yyyy'}}
+                                    </span>  
+                                  </td>
+                                  <td>
+                                    <a (click)="profilepage(pat.pid)" class="candidate-list-favourite order-2 text-danger" ><i class="fa fa-external-link-square info"></i></a>
+                                    <span class="candidate-list-time order-1"> </span>
+                                </td>
+                                </tr>
+                        
+                                
+                              </tbody>
+                            </table>
+                            <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+              
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  
+                  </div>
+                </div>
+        
+
+          <!--Container Main end-->
+          <ng-template #templateaddpatien>
+            <div class="modal-header">
+              <h4 class="modal-title pull-left">Ajouter un nouveau patient</h4>
+              <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                <span aria-hidden="true" class="visually-hidden">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="c1">
+                <form [formGroup]="formAddpatient" (ngSubmit)="addpatient()" >
+                  <div class="row">
+                <div class="col" >
+                  <label class="labelmod" for="Nom">Nom /Prénom <span>*</span></label>
+                  <input  class="input" maxlength="30"  type="text" formControlName="Nom" placeholder="Nom / Prénom ..">
+                </div>
+                <div class="col" >
+                  <label class="labelmod" for="TL">Telephone <span>*</span> </label>
+              <input  class="input" type="number" formControlName="TL" placeholder="Telephone ..">
+                 
+                </div>
+                  </div>
+                  <div class="row">
+                    <div class="col" >
+                      <label class="labelmod" >Genre <span>*</span></label>
+                      <select    formControlName="GNR" >
+                        <option   ></option>
+                        <option   value="Masculin" >Masculin</option>
+                        <option   value="Féminin" >Féminin</option>
+                      </select>
+                    </div>
+  
+                    <div class="col" >
+                  <label class="labelmod" for="DN">Date Naissance <span>*</span></label>
+                  <input   type="DATE"  formControlName="DN" placeholder="Date Naissance..">
+                </div>
+                
+                  </div>
+            
+                  <div class="row">
+                    <div class="col" >
+                      <label class="labelmod" for="Nom">Adresse <span>*</span></label>
+                      <input  class="input"   type="text" formControlName="ADRS" placeholder="Adresse ..">
+                </div>
+                <div class="col" >
+                  
+                </div>
+                  </div>
+        
+        
+        
+                 
+            
+                  <div  *ngIf="formAddpatient.invalid">
+                    <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                  </div>
+            
+                  <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+            
+                </form>
+              </div>
+              </div>
+              </ng-template>    
+     </body>
+
+
+ </html>
+ 
