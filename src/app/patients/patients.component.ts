@@ -35,11 +35,13 @@ export class PatientsComponent implements OnInit {
       pages=1;
       tel:any='';
       randomNumber:any;
-  constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe ) { }
-
-  ngOnInit(): void {
+  constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe ) {
     this.listpatient();
     this.randomNumber = Math.floor(Math.random() * 100) + 1;
+   }
+
+  ngOnInit(): void {
+   
   }
   tempaddpatien(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(
@@ -146,14 +148,14 @@ if(this.stpatient=='encours'){
     (patient.pst=='encours')
 );
 }else{
-this.listpatientFiltree =  this.listpatientFiltree = this.listpatients.filter((patient: { pst: String  }) => 
+this.listpatientFiltree =  this.listpatients.filter((patient: { pst: String  }) => 
 (patient.pst!=null)
 );}
 }
 
 stchanged(e:any){
   this.stpatient=e;
-  console.log(e)
+ 
   this.listpatientfilitred();
 }
 

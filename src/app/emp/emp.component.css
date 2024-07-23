@@ -1,4 +1,4 @@
-
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
 
 :root {
     --header-height: 3rem;
@@ -1481,7 +1481,7 @@ input[type=file] {
  
   margin-top: 30%;
   width: 500px;
-  height: 200px;
+  height: auto;
   margin-left:35%;
   overflow-y:scroll;
   background-color: white;
@@ -1620,39 +1620,47 @@ background:#0d6efd;
   height:400px;
   z-index: 2;
 }
-
-.titlesecond{
+input[type=month]:not(.monthsearch) {
+  padding: 12px 20px;
+   
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
   font-family: "rbt";
-  font-size: 14px;
-  color: red;
-
+  font-size: 12px;
 }
 
+.monthsearch{
+  padding: 12px 20px;
+   margin-left: 2%;
+  width: 13%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  font-family: "rbt";
+  font-size: 12px;
+}
 
-#invoice{
+#details,#bulletin{
   width: 80%;
   border-color: #0d6efd;
   height:100vh;
   z-index: 1;
-  font-family: "rbt";
-  font-weight: bold; /* ajout de la propriété manquante */
-  font-size: 1rem; 
+}
+.image-container img {
+  width: 100%;
+  height:150px;
 }
 
-@media print {
+.chargcontainer{
+
+  display: flex;
+justify-content: center;
+align-items: center;
+height: 300px;
 
 
-  .modal-header,.impr,#body-pd{
-    display: none;
-  }
-   
-  #invoice{
-   overflow: hidden;height: auto;width:100vh;;
-    font-family: "rbt";
-    font-weight: bold; /* ajout de la propriété manquante */
-    font-size: 1rem; 
-   
-  }
- 
-  
-  }
+}

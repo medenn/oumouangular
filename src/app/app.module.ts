@@ -14,7 +14,11 @@ import { ComptaComponent } from './compta/compta.component';
 import { ParametresComponent } from './parametres/parametres.component'; 
 import { HttpClientModule } from '@angular/common/http';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { DatePipe } from '@angular/common'
+import { DatePipe } from '@angular/common';
+import { EmployesComponent } from './employes/employes.component';
+import { EmpComponent } from './emp/emp.component';
+import { StatComponent } from './stat/stat.component';
+import { LoginComponent } from './login/login.component'
 
 
 @NgModule({
@@ -24,7 +28,11 @@ import { DatePipe } from '@angular/common'
     PatientsComponent,
     EventsComponent,
     ComptaComponent,
-    ParametresComponent
+    ParametresComponent,
+    EmployesComponent,
+    EmpComponent,
+    StatComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

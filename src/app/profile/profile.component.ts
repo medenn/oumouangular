@@ -13,6 +13,8 @@ import { DatePipe } from '@angular/common';
 })
 export class ProfileComponent implements OnInit {
   charg= "*/../assets/charg.gif";
+  logo= "*/../assets/logo.png";
+  logo2= "*/../assets/logo2.png";
   modalRef: any;
   formAddpatient = new FormGroup({
     Nom: new FormControl('', Validators.required ),
@@ -102,6 +104,10 @@ export class ProfileComponent implements OnInit {
  assurtaux:any=0;
  Newdossier:any=[];
  dossieridmod:any;
+ totalsArray:any=[];
+ seancesTraitsData:any=[];
+ totaldossiermnt:any=0;
+ dossierinfo:any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) {
 this.patid=this.route.snapshot.paramMap.get('id');
     this.patientinfo();
@@ -113,7 +119,6 @@ this.patid=this.route.snapshot.paramMap.get('id');
   ngOnInit(): void {
     
   }
-
   
   showTab(tabId: string,origin :Boolean): void {
     // Get all tab panels
@@ -401,6 +406,8 @@ onSelectionChange2(event: any) {
   }
 
   tempaddpaie(template: TemplateRef<any>) {
+    const myDialog :any= document.querySelector('#details');
+    myDialog.close(); 
     this.modalRef = this.modalService.show(
       template,
       Object.assign({}, { class: 'gray modal-lg' })
@@ -410,6 +417,8 @@ onSelectionChange2(event: any) {
   }
 
   tempmodpaie(template: TemplateRef<any>,id:any) {
+    const myDialog :any= document.querySelector('#details');
+    myDialog.close(); 
     this.modalRef = this.modalService.show(
       template,
       Object.assign({}, { class: 'gray modal-lg' })
@@ -473,11 +482,30 @@ const tabLink = document.getElementById(tabId);
 if (tabLink && validTabIds.includes(tabId)) {
     tabLink.classList.add('active'); 
 }
+ 
   this.listrait();
   this.listseances();
  
- 
 }
+statseance() {
+  const myDialog :any= document.querySelector('#statseance');
+  myDialog.showModal();
+this.seancesTraitsData=[];
+let data= this.dossiers.find((item: { did: number; }) => item.did === this.dossierid)
+data.details.forEach((item: string) => {
+  const elements = item.split(',');
+  const id = parseInt(elements[0]);
+  const montant = parseInt(elements[1]);
+  const nbre = parseInt(elements[2]);
+  this.seancesTraitsData.push({ id, montant, nbre });
+});
+}
+statpaie() {
+  const myDialog :any= document.querySelector('#statpaie');
+  myDialog.showModal();
+
+let data= this.dossiers.find((item: { did: number; }) => item.did === this.dossierid)
+this.totaldossiermnt=data.dclmnt;}
 closed(id:any){
   const myDialog :any= document.querySelector(id);
   myDialog.close(); 
@@ -493,8 +521,14 @@ tempinforendez(enote:any){
     modal.setAttribute('role', 'dialog');
     this.note=enote;
 }
-closetempinforendez(){
-  const modal = document.getElementById('form') as HTMLElement;
+
+tempinvoice(idossier:any){
+  const myDialog :any= document.querySelector('#invoice');
+  myDialog.showModal();
+  this.dossierinfo= this.dossiers.find((item: { did: number; }) => item.did === idossier)
+}
+closetempinforendez(id:any){
+  const modal = document.getElementById(id) as HTMLElement;
   modal.classList.remove('show');
   modal.style.display = 'none';
   modal.removeAttribute('aria-modal');
@@ -1263,6 +1297,18 @@ listmodepaiement(){
     });
 }
 
+totalpaiement(){
+  let total: number = 0;
+  this.paiements.forEach((paiement: any) => {
+    // Vérifions que paiement.pmnt est bien défini et est un nombre
+    if (typeof paiement.pmnt === 'number' && !isNaN(paiement.pmnt)) {
+      total += paiement.pmnt;
+    }
+  });
+  
+  this.paiements.totals=total;
+  
+}
 listpaiements(){
   this.pages=1;
   this.apiservice.getPaiementbypdos(this.dossierid).subscribe(
@@ -1270,10 +1316,11 @@ listpaiements(){
       
       if(data!=null){
       this.paiements=data;
-      
+      this.totalpaiement();
      
     }else{
       this.paiements=[];
+      this.totalpaiement();
     }
     },
     error => {
@@ -1388,6 +1435,8 @@ delpaie(id:any){
   this.apiservice.deletePaiement(id)
     .subscribe(
       (data) => {
+        const myDialog :any= document.querySelector('#details');
+    myDialog.close(); 
        this.listpaiements();
         Swal.fire({
    
@@ -1397,7 +1446,10 @@ delpaie(id:any){
         confirmButtonText: 'OK',
         //cancelButtonText: 'No, keep it',
       }).then((result) => {
-        
+        if (result.isConfirmed) {
+          const myDialog :any= document.querySelector('#details');
+        myDialog.showModal();
+        } 
        
       })
       },
@@ -1418,6 +1470,50 @@ getmodeById(id: number) {
   this.listmodepaiement();
   this.listpaiements();
  }
+
+ parseDetails(details: string[]): any[] {
+  return details.map(detail => {
+    const [id, nbre] = detail.split(',').map(item => item.trim());
+    return { id, nbre: parseInt(nbre, 10) };
+  });
+}
+
+totaliserNbre(): Record<string, number> {
+  this.totalsArray=[];
+  const totals: Record<string, number> = {};
+
+  // Vérifions que this.seances est bien initialisé et correctement défini
+  
+    this.seances.forEach((item: { details: string[] }) => {
+      // Vérifions que item.details est bien un tableau
+      
+        item.details.forEach(detail => {
+          const [id, nbre] = detail.split(',').map(item => item.trim());
+          const parsedNbre = parseInt(nbre, 10);
+
+          if (totals[id]) {
+            totals[id] += parsedNbre;
+          } else {
+            totals[id] = parsedNbre;
+          }
+        });
+      
+    });
+
+    for (const id in totals) {
+      if (totals.hasOwnProperty(id)) {
+        this.totalsArray.push({ id, total: totals[id] });
+      }
+    }
+  
+  return totals;
+}
+
+getTotalById(id: string): number  {
+  const foundItem = this.totalsArray.find((item: { id: string; }) => item.id == id);
+  return foundItem ? foundItem.total : 0;
+}
+
  listseances(){
   this.pages=1;
   this.apiservice.getSeancesbysdos(this.dossierid).subscribe(
@@ -1425,7 +1521,7 @@ getmodeById(id: number) {
       
       if(data!=null){
       this.seances=data;
-      
+     this.totaliserNbre();
      
     }else{
       this.seances=[];
@@ -1568,7 +1664,9 @@ delseance(id:any){
   this.apiservice.deleteSeances(id)
     .subscribe(
       (data) => {
-       this.listpaiements();
+        const myDialog :any= document.querySelector('#details');
+        myDialog.close(); 
+       this.listseances();
         Swal.fire({
    
           icon: 'success',
@@ -1577,7 +1675,10 @@ delseance(id:any){
         confirmButtonText: 'OK',
         //cancelButtonText: 'No, keep it',
       }).then((result) => {
-        
+        if (result.isConfirmed) {
+          const myDialog :any= document.querySelector('#details');
+        myDialog.showModal();
+        } 
        
       })
       },
@@ -1662,6 +1763,12 @@ getassurtaux(id: any) {
   return a?.asmnt;
  }
 
+ getassurname(id: any) {
+  
+  let a:any=this.assurs.find((item: { asid: any; }) => item.asid === id);
+  return a?.asnm;
+ }
+
  gettraitprix(id: any) {
 
  
@@ -1734,5 +1841,9 @@ hideandopendialog(){
   this.modalRef.hide();
   const myDialog :any= document.querySelector('#details');
   myDialog.showModal();
+}
+printinvoice(){
+  //this.closed('#invoice')
+  window.print();
 }
 }

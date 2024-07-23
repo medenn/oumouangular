@@ -1,0 +1,169 @@
+body {
+    color: #000;
+    overflow-x: hidden;
+    height: 100%;
+    background-color: #2097d2;
+    background-repeat: no-repeat;
+    font-family: "rbt";
+   
+}
+
+.card0 {
+    box-shadow: 0px 4px 8px 0px #757575;
+    border-radius: 0px;
+}
+
+.card2 {
+    margin: 0px 40px;
+}
+
+.logo {
+    width: 200px;
+    height: 100px;
+    margin-top: 20px;
+    margin-left: 35px;
+}
+
+.image {
+    width: 360px;
+    height: 280px;
+}
+
+.border-line {
+    border-right: 1px solid #EEEEEE;
+}
+
+
+.line {
+    height: 1px;
+    width: 45%;
+    background-color: #E0E0E0;
+    margin-top: 10px;
+}
+
+
+
+.text-sm {
+    font-size: 16px !important;
+    font-family: "rbt";
+    margin-bottom: 1%;
+}
+
+::placeholder {
+    color: #BDBDBD;
+    opacity: 1;
+    font-weight: 300
+}
+
+:-ms-input-placeholder {
+    color: #BDBDBD;
+    font-weight: 300
+}
+
+::-ms-input-placeholder {
+    color: #BDBDBD;
+    font-weight: 300
+}
+
+label{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+}
+input{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  width: 30%;
+  padding: 12px 20px;
+   
+
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    font-family: "rbt";
+    font-size: 14px;
+}
+
+.labelmod{
+
+    margin-right: 2%;
+    font-family: "rbt";
+    font-size: 17px;
+   font-weight: bold;
+
+}
+
+
+button:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    outline-width: 0;
+}
+
+a {
+    color: inherit;
+    cursor: pointer;
+}
+
+.btnn{
+    display: flex;
+    justify-content: center; /* Centre les éléments horizontalement */
+    align-items: center; /* Centre les éléments verticalement */
+}
+.btn-blue {
+    background-color: #0d6efd;
+    width: 150px;
+    color: #fff;
+    border-radius: 2px;
+    font-family: "rbt";
+    font-size: 18px;
+    
+}
+
+.btn-blue:hover {
+    background-color: #000;
+    cursor: pointer;
+}
+
+.bg-blue {
+    color: #fff;
+    background-color: #0d6efd;
+    font-size: 20px;
+    font-family: "rbt";
+    height: 80px;
+}
+
+@media screen and (max-width: 991px) {
+    label{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    input{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      width: 100%;}
+    .logo {
+        margin-left: 0px;
+    }
+
+    .image {
+        width: 300px;
+        height: 220px;
+    }
+
+    .border-line {
+        border-right: none;
+    }
+
+    .card2 {
+        border-top: 1px solid #EEEEEE !important;
+        margin: 0px 15px;
+    }
+}

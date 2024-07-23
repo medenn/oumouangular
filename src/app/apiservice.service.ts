@@ -238,4 +238,136 @@ Paiement(): Observable<any> {
     }
   
 
+    //employes
+
+    public Employesid(id:any): Observable<any> { 
+      return this.http.get<any>(this.baseUrl + '/Employesid/'+id);
+     }
+     public Employestel(tel:any): Observable<any> { 
+      return this.http.get<any>(this.baseUrl + '/Employestel/'+tel);
+     }
+     public Employes(): Observable<any> { 
+      return this.http.get<any>(this.baseUrl + '/Employes');
+    }
+    addEmployes(Employes : any): Observable<any>{
+      return this.http.post(this.baseUrl + '/addEmployes',Employes);
+    }
+    modEmployes(Employes : any,id:any): Observable<any>{
+      return this.http.put(this.baseUrl + '/modEmployes/'+id,Employes);
+    }
+    modEmployest(st : any,id:any): Observable<any>{
+      return this.http.put(this.baseUrl + '/modEmployest/'+id+'/'+st,null);
+    }
+    delEmployes(id : any): Observable<any>{
+      return this.http.delete(this.baseUrl + '/delEmployes/'+id);
+    }
+    uploadFileEmp(formData:any,id:any): Observable<any>{
+      return this.http.post(this.baseUrl + '/uploadFileEmp/'+id,formData);
+    }
+
+    //Primes
+
+  Primes(pide:any,month:any,year:any): Observable<any> { 
+    const params = new HttpParams()
+    .set('pide', pide)
+    .set('month', month)
+    .set('year', year);
+    return this.http.get<any>(this.baseUrl + '/Primes',{params});
+  }
+    
+  addPrimes(Prime: any): Observable<any> {
+      return this.http.post<any>(this.baseUrl + '/addPrimes',Prime);
+    }
+  
+    updatePrimes(id: any, prime: any): Observable<any> {
+      return this.http.put<any>(this.baseUrl + '/updatePrimes/' + id,prime);
+    }
+  
+    deletePrimes(id: any): Observable<any> {
+      return this.http.delete<any>(this.baseUrl + '/deletePrimes/' + id);
+    }
+
+    PrimesByPIDE(id : any): Observable<any>{
+      return this.http.get(this.baseUrl + '/PrimesByPIDE/'+id);
+    }
+    //Absences
+    AbsencesByAIDE(id : any): Observable<any>{
+      return this.http.get(this.baseUrl + '/AbsencesByAIDE/'+id);
+    }
+  Absences(aide:any,month:any,year:any): Observable<any> { 
+    const params = new HttpParams()
+    .set('aide', aide)
+    .set('month', month)
+    .set('year', year);
+    return this.http.get<any>(this.baseUrl + '/Absences',{params});
+  }
+    
+  addAbsences(Absences: any): Observable<any> {
+      return this.http.post<any>(this.baseUrl + '/addAbsences',Absences);
+    }
+  
+    updateAbsences(id: any, Absences: any): Observable<any> {
+      return this.http.put<any>(this.baseUrl + '/updateAbsences/' + id, Absences);
+    }
+  
+    deleteAbsences(id: any): Observable<any> {
+      return this.http.delete<any>(this.baseUrl + '/deleteAbsences/' + id);
+    }
+
+  //avances
+
+  addAvance(Avance: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + '/addAvance',Avance);
+  }
+
+  updateAvance(id: any, avance: any): Observable<any> {
+    return this.http.put<any>(this.baseUrl + '/updateAvance/' + id,avance);
+  }
+
+  updateAvancedetail(id: any, avance: any): Observable<any> {
+    return this.http.put<any>(this.baseUrl + '/updateAvancedetail/' + id,avance);
+  }
+
+
+  deleteAvance(id: any): Observable<any> {
+    return this.http.delete<any>(this.baseUrl + '/deleteAvance/' + id);
+  }
+
+  AvanceByAIDE(id : any): Observable<any>{
+    return this.http.get(this.baseUrl + '/AvanceByAIDE/'+id);
+  }
+
+  salaireinfo(empid: any,annee:any,mois :any,annee2:any,mois2:any): Observable<any>{
+  
+    return this.http.get<any>(this.baseUrl + '/salaireinfo/'+empid+'/'+annee+'/'+mois+'/'+annee2+'/'+mois2);
+  }
+
+ 
+  
+ findbulletin(empid: any,mois:any,annee :any): Observable<any>{
+  
+    return this.http.get<any>(this.baseUrl + '/findbulletin/'+empid+'/'+mois+'/'+annee);
+  }
+  delbulletin(empid : any,annee:any,mois:any): Observable<any>{
+    return this.http.delete(this.baseUrl + '/deltbulletin/'+empid+'/'+annee+'/'+mois);
+  } 
+  addbulletin(bulletin : any): Observable<any>{
+    return this.http.post(this.baseUrl + '/addbulletin',bulletin);
+  }
+
+  getbulltinbydate(month:any,year:any): Observable<any> { 
+    const params = new HttpParams()
+    .set('month', month)
+    .set('year', year);
+    return this.http.get<any>(this.baseUrl + '/bulletins',{params});
+  }
+
+  stat(date1:any,date2:any): Observable<any>{
+    return this.http.get(this.baseUrl + '/stat'+date1+'/'+date2);
+  }
+
+  statglobal(): Observable<any>{
+    return this.http.get(this.baseUrl + '/statglobal');
+  }
+  
 }

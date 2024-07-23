@@ -13,40 +13,41 @@
         <div class="l-navbar" id="nav-bar">
             <nav class="nav">
                 <div> 
-                    <a href="#" class="nav_logo"> 
-                        <i class='bx bx-layer nav_logo-icon'></i> 
-                        <span class="nav_logo-name">CKRF</span> 
+                  
+                    <a class="nav_logo" >
+                      <img src="{{logo}}" class="img-fluid" width="180" height="44">
+                      
                     </a>
                     <div class="nav_list"> 
                        
-                        <a href="#" class="nav_link active"> 
+                        <a routerLink="/patient"  class="nav_link active"> 
                             <i class='bx bx-user nav_icon'></i> 
                             <span class="nav_name">Patients</span> 
                         </a> 
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/events"  class="nav_link"> 
                             <i class='bx bx-calendar nav_icon'></i> 
                             <span class="nav_name">Rendez-Vous</span> 
                         </a> 
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/compta"  class="nav_link"> 
                             <i class='bx bx-calculator nav_icon'></i> 
                             <span class="nav_name">Comptabilité</span> 
                         </a> 
                         
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/stats"  class="nav_link"> 
                             <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
                             <span class="nav_name">Statistique</span> 
                         </a> 
-                        <a href="#" class="nav_link "> 
+                        <a routerLink="/employes"  class="nav_link "> 
                           <i class='bx bx-grid-alt nav_icon'></i> 
-                          <span class="nav_name">RH</span> 
+                          <span class="nav_name">Employés</span> 
                       </a> 
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/parametres"  class="nav_link"> 
                           <i class='bx bx-certification nav_icon'></i> 
                           <span class="nav_name">Administration</span> 
                       </a> 
                     </div>
                 </div> 
-                <a href="#" class="nav_link"> 
+                <a routerLink="/logout"  class="nav_link"> 
                     <i class='bx bx-log-out nav_icon'></i> 
                     <span class="nav_name">Déconnexion</span> 
                 </a>
@@ -68,7 +69,7 @@
                     <div class="mt-3">
                       <h5>{{this.infospat?.pnom}}</h5>
                         <i  *ngIf="patst=='encours'" style="font-size: 2em;color:green" class='bx bx-check-circle nav_icon'></i> 
-                        <i  *ngIf="patst!='encours'" style="font-size: 2em;color:red" class='bx bx-check-circle nav_icon'></i> 
+                        <i  *ngIf="patst!='encours'" style="font-size: 2em;color:red" class='bx bx-x-circle nav_icon'></i> 
 
                         <p class="text-muted "></p>
                       <div class="button-container">
@@ -196,8 +197,10 @@
                                       <div class="btn-group">
                                         <button id="editButton" (click)="tempmoddossier(templatemoddossier,dos.did)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
                                         <button id="deleteButton" (click)="deldossier(dos.did)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                        <button id="deleteButton" (click)="tempinforendez(dos.dnote)"class="btn btn-info btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-info"></i></button>
                                       </div>
-                                      <button id="deleteButton" (click)="tempinforendez(dos.dnote)"class="btn btn-info btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-info"></i></button>
+                                      <button id="deleteButton" (click)="tempinvoice(dos.did)"class="btn btn-warning btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-file"></i></button>
+                                     
 
                                         <a (click)="tempdetails(dos.did)"  class="btn btn-sm btn-flash-border-primary">détails</a>
  
@@ -892,14 +895,16 @@
             <div id="myTab2Content" class="tab-content">
               <div id="seances" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show  active ">
                 <div class="btm"><br></div>
-                <div class="progress">
-                <div  class="progress-bar bg-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%;" title="test"></div>
-              </div>
+                
                   <!-- <select    class="dropdown-toggle">
                     <option  class="dropdown-item" ></option>
                     <option class="dropdown-item">Masculin</option>
                   </select> -->
-                                 <button  (click)="tempaddseance(templateaddseance)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                            
+                  
+                  <button  (click)="tempaddseance(templateaddseance)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                  <button  (click)="statseance()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
+
                 <div class="event-schedule-area-two bg-color ">
   
                     <div class="container">
@@ -977,6 +982,8 @@
                     <option class="dropdown-item">Masculin</option>
                   </select> -->
                                  <button    (click)="tempaddpaie(templateaddpaie)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                                 <button  (click)="statpaie()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
+
                 <div class="event-schedule-area-two bg-color ">
   
                     <div class="container">
@@ -1013,7 +1020,7 @@
                                             <div class="event-wrap">
                                                    
                                                     <div class="categories">
-                                                        <a class="mnt"> {{paie.pmnt}} UM</a>
+                                                        <a class="mnt"> {{paie.pmnt| number : '1.2-2'}} UM</a>
                                                         <a class="mode">{{getmodeById(paie.pmode)}}</a>
                                                     </div>
                                                
@@ -1342,7 +1349,7 @@ formControlName="SN"
           <div class="modal-content  px-md-4 p-sm-3 p-4">
           
          
-            <a  (click)="closetempinforendez()"> <i class="fa fa-close"></i></a>
+            <a  (click)="closetempinforendez('form')"> <i class="fa fa-close"></i></a>
             <p class="r3 px-md-5 px-sm-1">{{ note ? note : 'aucune note' }}</p>
              
               
@@ -1350,6 +1357,170 @@ formControlName="SN"
           </div>
       
   </div>
+<!-- formseance -->
+<dialog id="statseance">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Statut du dossier </h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#statseance')">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+          <div class="c1">
+            <div *ngFor="let item of seancesTraitsData">
+              
+              {{gettraitById(item.id)}} :   {{getTotalById(item.id)}}/{{item.nbre}}
+            <div  class="progress">
+            <div  class="progress-bar bg-success"
+                   role="progressbar" [style.width.%]="(getTotalById(item.id)/ item.nbre)*100" 
+                   aria-valuemin="0" aria-valuemax="100" [attr.title]=" ((getTotalById(item.id)/ item.nbre)*100  | number : '1.0-0' ) +'%'">
+              </div>
+            </div>
+            <br>
+            </div>
+            </div>
+            </div>
+
+</dialog>
+
+<dialog id="statpaie">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Statut du dossier </h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#statpaie')">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+          <div class="c1">
+         
+              
+            PAIEMENTS : {{this.paiements.totals}} UM/{{this.totaldossiermnt}} UM
+            <div  class="progress">
+            <div  class="progress-bar bg-success"
+                   role="progressbar" [style.width.%]="(this.paiements.totals/ this.totaldossiermnt)*100" 
+                   aria-valuemin="0" aria-valuemax="100" [attr.title]=" ((this.paiements.totals/ this.totaldossiermnt)*100 | number : '1.0-0' )  +'%'">
+              </div>
+            </div>
+            <br>
+            </div>
+            </div>
+          
+
+</dialog>
+
+
      </body>
+     <dialog id="invoice">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Dossier Infos :  </h4>
+        <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#invoice')">
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <section class="py-3 py-md-5">
+        <div class="row">
+          <div class="col-12 text-end">
+            <button (click)="printinvoice()" class="btn btn-primary mb-3 impr">Imprimer</button>
+            
+          </div>
+        </div>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-lg-9 col-xl-9 col-xxl-9">
+              <div class="row gy-3 mb-3">
+                <div class="col-6">
+                  <h2 class="text-uppercase text-endx m-0">Facture</h2>
+                </div>
+                <div class="col-6">
+                  <a class="d-block text-end" href="#!">
+                    <img src="{{logo}}" class="img-fluid" width="135" height="44">
+                  </a>
+                </div>
+                <div class="col-12">
+                  <h5>patient : </h5>
+                  <address>
+                    <strong>Nom : {{this.infospat?.pnom}}</strong><br>
+                    Telephone : {{this.infospat?.ptel}} <br>
+                    Date Naissance : {{this.infospat?.pnai | date:'dd-MM-yyyy'}}<br>
+                  </address>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12 col-sm-6 col-md-6">
+                  
+                  <address>
+                    Numéro Dossier : {{dossierinfo?.did}}<br>
+                    <strong>Date :{{dossierinfo?.ddate| date:'dd-MM-yyyy'}} </strong><br>
+                    Remise : {{dossierinfo?.dremise}} % <br>
+                  
+                    Montant à payer : {{dossierinfo?.dclmnt | number : '1.2-2'}} UM<br>
+                    
+                  </address>
+                </div>
+                <div class="col-12 col-sm-6 col-md-6">
+                 
+                  <h5 *ngIf="dossierinfo?.dassur"  >Détails de l'Assurance</h5>
+                  <address *ngIf="dossierinfo?.dassur">
+                    {{getassurname(dossierinfo?.dassurid)}}<br>
+                    <strong>Taux de couverture : {{dossierinfo?.dassurtaux}} % </strong><br>
+                    Montant assuré : {{dossierinfo?.dassurmnt | number : '1.2-2'}}  UM<br>
+                    
+                  </address>
+                  <!-- <div class="row" *ngIf="dossierinfo?.dassur" >
+                    <span class="col-6">{{getassurname(dossierinfo?.dassurid)}}</span>
+                    <span class="col-6 text-sm-end"></span>
+                    <span class="col-6">Taux de couverture :</span>
+                    <span class="col-6 text-sm-end">{{dossierinfo?.dassurtaux}} %</span>
+                    <span class="col-6">Montant assuré:</span>
+                    <span class="col-6 text-sm-end">{{dossierinfo?.dassurmnt | number : '1.2-2'}} UM</span>
+                    
+                  </div> -->
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="text-uppercase">Traitement</th>
+                          <th scope="col" class="text-uppercase">Tarif</th>
+                          <th scope="col" class="text-uppercase text-end">Nbre séances</th>
+                          <th scope="col" class="text-uppercase text-end">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-group-divider">
+                        <tr *ngFor="let detail of dossierinfo?.details; let i = index">
+                          <th scope="row">{{ gettraitById(detail.split(',')[0]) }}</th>
+                          <td>{{detail.split(',')[1]}}</td>
+                          <td class="text-end">{{ detail.split(',')[2] }}</td>
+                          <td class="text-end">{{ detail.split(',')[1] * detail.split(',')[2] }}</td>
+                        </tr>
+                
+                        <tr>
+                          <td colspan="3" class="text-end">Total</td>
+                          <td class="text-end">{{dossierinfo?.dmntbr | number : '1.2-2'}} UM</td>
+                        </tr>
+                        <tr>
+                          <td colspan="3" class="text-end">Remise </td>
+                          <td class="text-end">{{(dossierinfo?.dmntbr * (dossierinfo?.dremise/100) )| number : '1.2-2'}} UM</td>
+                        </tr>
+                       
+                        <tr>
+                          <th scope="row" colspan="3" class="text-uppercase text-end">Total Général</th>
+                          <td class="text-end">{{dossierinfo?.dmntar | number : '1.2-2'}} UM</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+             
+            </div>
+          </div>
+        </div>
+      </section>
+      
+        </dialog>
  </html>
  
