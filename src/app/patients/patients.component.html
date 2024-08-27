@@ -1,67 +1,68 @@
 <html>
-    
-    <body  id="body-pd">
-        <header class="header" id="header">
-            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
-			
-           <div class="header_user">
-        <div class="header_text">Meden Belkasem</div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
-    </div>
-        </header>
+  <body  id="body-pd">
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
+  
+       <div class="header_user">
+        <div class="header_text">{{this.username}}</div>
+        <div class="header_img"> <img src="assets/profiles/users/img{{this.username}}.png"  onerror="this.src='assets/profiles/defaut.png'" alt=""> </div>
+</div>
+    </header>
 
-        <div class="l-navbar" id="nav-bar">
-            <nav class="nav">
-                <div> 
-                    <a href="#" class="nav_logo"> 
-                        <i class='bx bx-layer nav_logo-icon'></i> 
-                        <span class="nav_logo-name">CKRF</span> 
-                    </a>
-                    <div class="nav_list"> 
-                       
-                        <a href="#" class="nav_link active"> 
-                            <i class='bx bx-user nav_icon'></i> 
-                            <span class="nav_name">Patients</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calendar nav_icon'></i> 
-                            <span class="nav_name">Rendez-Vous</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calculator nav_icon'></i> 
-                            <span class="nav_name">Comptabilité</span> 
-                        </a> 
-                        
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
-                            <span class="nav_name">Statistique</span> 
-                        </a> 
-                        <a href="#" class="nav_link "> 
-                          <i class='bx bx-grid-alt nav_icon'></i> 
-                          <span class="nav_name">RH</span> 
-                      </a> 
-                        <a href="#" class="nav_link"> 
-                          <i class='bx bx-certification nav_icon'></i> 
-                          <span class="nav_name">Administration</span> 
-                      </a> 
-                    </div>
-                </div> 
-                <a href="#" class="nav_link"> 
-                    <i class='bx bx-log-out nav_icon'></i> 
-                    <span class="nav_name">Déconnexion</span> 
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div> 
+              
+                <a class="nav_logo"  >
+                  <img id="logo" src="{{logo}}" class="img-fluid" width="0" height="0">
+                  
+                  
                 </a>
-            </nav>
-        </div>
+                <div class="nav_list"> 
+                   
+                    <a routerLink="/patient"  class="nav_link active"> 
+                        <i class='bx bx-user nav_icon'></i> 
+                        <span class="nav_name">Patients</span> 
+                    </a> 
+                    <a routerLink="/events"  class="nav_link"> 
+                        <i class='bx bx-calendar nav_icon'></i> 
+                        <span class="nav_name">Rendez-Vous</span> 
+                    </a> 
+                    <a routerLink="/compta"  class="nav_link"> 
+                        <i class='bx bx-calculator nav_icon'></i> 
+                        <span class="nav_name">Activités</span> 
+                    </a> 
+                    
+                    <a routerLink="/stat"  class="nav_link"> 
+                        <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                        <span class="nav_name">Statistique</span> 
+                    </a> 
+                    <a routerLink="/employes"  class="nav_link "> 
+                      <i class='bx bx-grid-alt nav_icon'></i> 
+                      <span class="nav_name">Employés</span> 
+                  </a> 
+                    <a *ngIf="this.role=='superadmin'" routerLink="/parametres"  class="nav_link"> 
+                      <i class='bx bx-certification nav_icon'></i> 
+                      <span class="nav_name">Administration</span> 
+                  </a> 
+                </div>
+            </div> 
+            <a (click)="logout()"  class="nav_link"> 
+                <i class='bx bx-log-out nav_icon'></i> 
+                <span class="nav_name">Déconnexion</span> 
+            </a>
+        </nav>
+    </div>
 
                <!--Container Main start-->
-               <div class="height-100 bg-light">
+               <div class="height-100 ">
 		
 		
                 <div class="row d-flex justify-content-center mt-5 ">
         
                     <div class="col-md-8">
                         
-        
+        <br>
                         <div class="card1">
         
                           <div class="d-flex justify-content-between align-items-center">
@@ -80,9 +81,47 @@
                           </div>
         
                           <div class="mt-3 inputs">
-                              <i style="color:  #0d6efd;font-size: 18px;" class="fa fa-search "></i>
-                              <input type="text" [(ngModel)]="tel" (keyup.enter)="search()" class="form-control " placeholder="Rechercher par numéro de téléphone ...">
-                            
+                          <i style="color:  #0d6efd;font-size: 18px;" class="fa fa-search "></i> 
+                             <!-- <input type="text"class="form-control " placeholder="Rechercher par numéro de téléphone ..."> -->
+                        
+                                <!-- <ng-autocomplete  #auto
+                                
+                                  [data]="datapatient"
+                                  [searchKeyword]="keyword"
+                                  placeholder="Rechercher par nom ou numéro de téléphone ..."
+                                  (selected)='selectEvent($event)'
+                                  (closed)="close()"
+                                  (inputChanged)='onChangeSearch($event)'
+                                  (inputFocused)='onFocused($event)'
+                                  [itemTemplate]="itemTemplate"
+                                  [notFoundTemplate]="notFoundTemplate"
+                                  [customFilter]="customFilter2"
+                                  [(ngModel)]="tel"  
+                                  (keyup.enter)="search()"
+                                  class="form-controlng"    >                         
+                                </ng-autocomplete>
+                                
+                                <ng-template #itemTemplate let-item>
+                                <a [innerHTML]="item.name"></a>
+                                </ng-template>
+                                
+                                <ng-template #notFoundTemplate let-notFound>
+                               
+                                </ng-template> -->
+
+                                <input 
+                                placeholder="Rechercher par nom ou numéro de téléphone ..."
+                                [(ngModel)]="tel"
+                                (keyup.enter)="search()"
+                                [typeahead]="datapatient"
+                                typeaheadOptionField="name"
+                                (typeaheadOnSelect)="selectEvent($event)"
+                                [typeaheadOptionsLimit]="7"
+                                
+                                class="form-control"> 
+
+                          
+                             
                           </div>
         
         
@@ -98,15 +137,25 @@
                 
                   <div class="btm"><br></div>
                 <!-- !-->
-                <div class="main-content">
-                
+                <div class="mt-3 inputs">
+                  <input 
+                  placeholder="Filtrer par type de traitement"
+                  [(ngModel)]="traitselected"
+                  [typeahead]="listtrait"
+                  typeaheadOptionField="name"
+                  (typeaheadOnSelect)="traitchange($event)"
+                  [typeaheadOptionsLimit]="3"
+                  (typeaheadNoResults)="traitdelete($event)"
+                  class="form-control2"> 
+                  
+                </div>
                     <!-- Table -->
               <div class="row">
               
                       <div class="col">
                         <div class="card shadow">
                           <div class="card-header border-0">
-                            <h3 class="mb-0">Liste Des Patients</h3>
+                            <h3 class="mb-0">Liste Des Patients [{{listpatientFiltree.length}}]</h3>
                           </div>
                           <div  *ngIf="inchargement" class="chargcontainer">
                             <div class="image-container">
@@ -117,27 +166,32 @@
                             <table class="table align-items-center table-flush">
                               <thead class="thead-light">
                                 <tr class="entete">
+                                  <th >Nº </th> 
                                   <th scope="col">Nom /Prénom</th>
                                   <th  scope="col">Telephone </th>
                                   <th scope="col">Date Naissance </th>
                                   <th  scope="col">Genre</th>
                                   <th  scope="col">Adresse</th>
                                   <th  scope="col">Date D'ajout</th>
-                                  <th class="text-center"  scope="col">Actions</th>
+                                  <!-- <th class="text-center"  scope="col">Actions</th> -->
                                   
                                  
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr *ngFor="let pat of listpatientFiltree| paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}">
-                                  
+                                <tr *ngFor="let pat of listpatientFiltree| paginate: {id:'pagination', itemsPerPage: 30, currentPage: pages} ; let i = index">
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                      {{ i + 1 }}
+                                    </span>  
+                                  </td>
                                   <th scope="row">
                                     <div class="media align-items-center">
-                                      <a href="#" class="avatar rounded-circle mr-3">
-                                        <img alt="Image placeholder"src="assets/profiles/img{{pat.pid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                      <a (click)="profilepage(pat.pid)"  class="avatar rounded-circle mr-3">
+                                        <img alt="Image placeholder " src="assets/profiles/img{{pat.pid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                       </a>
                                       <div class="media-body">
-                                        <span  class="mb-0 text-sm"><a  [ngClass]="{'strikethrough': pat.pst !== 'encours'}">{{pat.pnom }}</a></span>
+                                        <span  class="mb-0 text-sm"><a   [ngClass]="{'strikethrough': pat.pst !== 'encours'}">{{pat.pnom }}</a> </span>
                                        
                                       </div>
                                     </div>
@@ -168,10 +222,10 @@
                                       {{pat.pdaj | date:'dd-MM-yyyy'}}
                                     </span>  
                                   </td>
-                                  <td>
+                                  <!-- <td>
                                     <a (click)="profilepage(pat.pid)" class="candidate-list-favourite order-2 text-danger" ><i class="fa fa-external-link-square info"></i></a>
                                     <span class="candidate-list-time order-1"> </span>
-                                </td>
+                                </td> -->
                                 </tr>
                         
                                 
@@ -186,7 +240,7 @@
                     </div>
                   
                   </div>
-                </div>
+              
         
 
           <!--Container Main end-->

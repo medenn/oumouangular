@@ -9,20 +9,22 @@ import { EmployesComponent } from './employes/employes.component';
 import { EmpComponent } from './emp/emp.component';
 import { StatComponent } from './stat/stat.component';
 import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './auth-guard.service';
+import { title } from 'process';
 
 const routes: Routes = [
-  {path:'*',component:PatientsComponent},
-  {path:'',component:PatientsComponent},
-  {path:'login',component:LoginComponent},
-  {path:'profile/:id',component:ProfileComponent},
-  {path:'patient',component:PatientsComponent},
-  {path:'events',component:EventsComponent},
-  {path:'compta',component:ComptaComponent},
-  {path:'parametres',component:ParametresComponent},
-  {path:'employes',component:EmployesComponent},
-  {path:'stat',component:StatComponent},
-  {path:'emp/:id',component:EmpComponent},
-  {path:'**',component:PatientsComponent},
+  {path:'*',component:LoginComponent},
+  {path:'',component:LoginComponent},
+  {path:'login',component:LoginComponent, data:{title:'hi test'}},
+  {path:'profile/:id',component:ProfileComponent,canActivate: [AuthGuard]},
+  {path:'patient',component:PatientsComponent,canActivate: [AuthGuard]},
+  {path:'events',component:EventsComponent,canActivate: [AuthGuard]},
+  {path:'compta',component:ComptaComponent,canActivate: [AuthGuard]},
+  {path:'parametres',component:ParametresComponent,canActivate: [AuthGuard]},
+  {path:'employes',component:EmployesComponent,canActivate: [AuthGuard]},
+  {path:'stat',component:StatComponent,canActivate: [AuthGuard]},
+  {path:'emp/:id',component:EmpComponent,canActivate: [AuthGuard]},
+  {path:'**',component:LoginComponent},
 ];
 
 @NgModule({

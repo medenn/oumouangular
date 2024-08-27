@@ -5,8 +5,8 @@
             <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
 			
            <div class="header_user">
-        <div class="header_text">Meden Belkasem</div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+            <div class="header_text">{{this.username}}</div>
+            <div class="header_img"> <img src="assets/profiles/users/img{{this.username}}.png"  onerror="this.src='assets/profiles/defaut.png'" alt=""> </div>
     </div>
         </header>
 
@@ -14,8 +14,9 @@
             <nav class="nav">
                 <div> 
                   
-                    <a class="nav_logo" >
-                      <img src="{{logo}}" class="img-fluid" width="180" height="44">
+                    <a class="nav_logo"  >
+                      <img id="logo" src="{{logo}}" class="img-fluid" width="0" height="0">
+                      
                       
                     </a>
                     <div class="nav_list"> 
@@ -30,10 +31,10 @@
                         </a> 
                         <a routerLink="/compta"  class="nav_link"> 
                             <i class='bx bx-calculator nav_icon'></i> 
-                            <span class="nav_name">Comptabilité</span> 
+                            <span class="nav_name">Activités</span> 
                         </a> 
                         
-                        <a routerLink="/stats"  class="nav_link"> 
+                        <a routerLink="/stat"  class="nav_link"> 
                             <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
                             <span class="nav_name">Statistique</span> 
                         </a> 
@@ -41,13 +42,13 @@
                           <i class='bx bx-grid-alt nav_icon'></i> 
                           <span class="nav_name">Employés</span> 
                       </a> 
-                        <a routerLink="/parametres"  class="nav_link"> 
+                        <a  *ngIf="this.role=='superadmin'" routerLink="/parametres"  class="nav_link"> 
                           <i class='bx bx-certification nav_icon'></i> 
                           <span class="nav_name">Administration</span> 
                       </a> 
                     </div>
                 </div> 
-                <a routerLink="/logout"  class="nav_link"> 
+                <a (click)="logout()"  class="nav_link"> 
                     <i class='bx bx-log-out nav_icon'></i> 
                     <span class="nav_name">Déconnexion</span> 
                 </a>
@@ -158,6 +159,9 @@
               <a id="dossier" data-toggle="tab" (click)="showTab('dossier',true)" role="tab" aria-controls="home2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 active">Dossiers Médicaux </a>
             </li>
             <li class="nav-item flex-sm-fill">
+              <a id="consultation" data-toggle="tab" (click)="showTab('consultation',true)" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 "> Consultations</a>
+            </li>
+            <li class="nav-item flex-sm-fill">
               <a id="rendezvous" data-toggle="tab" (click)="showTab('rendezvous',true)" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 "> Rendez Vous</a>
             </li>
             <li class="nav-item flex-sm-fill">
@@ -166,9 +170,14 @@
           </ul>
           <div id="myTab2Content" class="tab-content">
             <div id="dossier" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show active  ">
-              <button (click)="tempadddossier(templateadddossier)" class="btn btn-primary new"><i class="fa fa-plus"></i> Ajouter un dossier</button>
+              <button *ngIf="!inchargement" (click)="tempadddossier(templateadddossier)" class="btn btn-primary new"><i class="fa fa-plus"></i> Ajouter un dossier</button>
               <div class="container">
-                <div class="row">
+                <div  *ngIf="inchargement" class="chargcontainer">
+                  <div class="image-container">
+                    <img [src]="charg"  >
+                  </div>
+                </div> 
+                <div *ngIf="!inchargement" class="row">
                     <div class="col-lg-4"  *ngFor="let dos of dossiers">
                         <div class="card card-margin">
                             <div class="card-header no-border">
@@ -183,26 +192,34 @@
                                             <span class="widget-49-date-month">{{dos.ddate| date:'yyyy'}}</span>
                                         </div>
                                         <div class="widget-49-meeting-info">
-                                            <span class="widget-49-pro-title">Remise : {{dos.dremise}}%</span>
-                                            <span class="widget-49-meeting-time">Total : {{dos.dmntar}} UM</span>
+                                            <span  *ngIf="!dos.prischrg" class="widget-49-pro-title">Remise : {{dos.dremise}}%</span>
+                                            <span *ngIf="!dos.prischrg" class="widget-49-meeting-time">Total : {{dos.dmntar}} UM</span>
+                                            <span *ngIf="dos.prischrg" class="widget-49-meeting-time">Total : {{dos.dmntbr}} UM</span>
+                                            <ng-container  *ngIf="!dos.prischrg">
                                             <span *ngIf="dos.dassur" style="color: green;" class="widget-49-meeting-time">Assuré : {{dos.dassurtaux}}%</span>
                                             <span *ngIf="!dos.dassur" style="color:red"  class="widget-49-meeting-time">Non Assuré</span>
+                                          </ng-container>
+                                            <span *ngIf="dos.prischrg" style="color: green;" class="widget-49-meeting-time">Pris en charge</span>
                                             <span class="widget-49-meeting-time">Montant à payer : {{dos.dclmnt}} UM</span>
+                                            <span *ngIf="!dos.dvalide"  style="color:red"  class="widget-49-meeting-time">En cours de validation</span>
                                           </div>
                                     </div>
                                     <ol  class="widget-49-meeting-points">
                                         <li *ngFor="let detail of dos.details; let i = index" class="widget-49-meeting-item"><span>{{ gettraitById(detail.split(',')[0]) }} [{{ detail.split(',')[2] }}]</span></li>
                                     </ol>
                                     <div class="widget-49-meeting-action">
-                                      <div class="btn-group">
-                                        <button id="editButton" (click)="tempmoddossier(templatemoddossier,dos.did)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
-                                        <button id="deleteButton" (click)="deldossier(dos.did)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
-                                        <button id="deleteButton" (click)="tempinforendez(dos.dnote)"class="btn btn-info btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-info"></i></button>
-                                      </div>
+                                      <!-- <div class="btn-group"> -->
+                                        <button *ngIf="!dos.dvalide || this.role=='superadmin'"  id="editButton" (click)="tempmoddossier(templatemoddossier,dos.did)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                        <button  *ngIf="!dos.dvalide || this.role=='superadmin'" id="deleteButton" (click)="deldossier(dos.did)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                        <button id="deleteButton" (click)="tempinforendez(dos.dnote)" class="btn btn-info btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-info"></i></button>
+                                        <button id="deleteButton" (click)="tempaddjoursrendez(templateaddjoursrendez,dos.did)" class="btn btn-secondary btn-circle btn-circle-sm m-1" ><i class="fa fa-calendar-check-o"></i></button>
+    
+                                     
+                                      <!-- </div> -->
                                       <button id="deleteButton" (click)="tempinvoice(dos.did)"class="btn btn-warning btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-file"></i></button>
                                      
 
-                                        <a (click)="tempdetails(dos.did)"  class="btn btn-sm btn-flash-border-primary">détails</a>
+                                        <a  *ngIf="dos.dvalide " (click)="tempdetails(dos.did)"  class="btn btn-sm btn-flash-border-primary">détails</a>
  
                                     </div>
                                 </div>
@@ -217,6 +234,67 @@
          
        
             </div>
+            <div id="consultation" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade  ">
+              <div class="container flex-grow-1 light-style container-p-y">
+                <div  *ngIf="inchargement" class="chargcontainer">
+                  <div class="image-container">
+                    <img [src]="charg"  >
+                  </div>
+                </div>
+          <div *ngIf="!inchargement" class="container-m-nx container-m-ny bg-lightest mb-3">
+              
+            <button (click)="tempaddcons(templateaddcons)" class="btn btn-primary new"><i class="fa fa-plus"></i> une nouvelle consultation</button>
+      
+              <hr class="m-0" />
+          </div>
+      
+          <div class="file-manager-container file-manager-col-view">
+              
+      
+             
+      
+              
+      
+              
+              <div class="file-item" *ngFor="let cons of cons | paginate: {id:'pagination4', itemsPerPage: 10, currentPage: pages}">
+                  <div class="file-item-select-bg bg-primary"></div>
+                  <label class="file-item-checkbox custom-control custom-checkbox">
+                    
+                      <span class="custom-control-label"></span>
+                  </label>
+                  <button id="deleteButton" (click)="tempinvoicecons(cons.cid)"class="btn btn-warning btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-file"></i></button>
+                  <!-- <a (click)="downloadfile(file.name)"  class="file-item-name">
+                     {{file.name}}
+                  </a> -->
+                  <br>
+                  <a   class="file-item-date">
+                    {{cons.cdate| date:'dd-MM-yyyy'}}
+                 </a>
+                  <div class="file-item-changed"> </div>
+              
+                 
+
+                  <div class="btn-group">
+          <button id="editButton" (click)="tempmodcons(templatemodcons,cons.cid)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Edit"><i class="fa fa-edit"></i></button>
+          <button id="deleteButton"  (click)="delcons(cons.cid)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Delete"><i class="fa fa-trash"></i></button>
+        </div>
+
+              </div>
+      
+            
+
+             
+      
+              
+      
+              
+      
+              
+          </div>
+          <pagination-controls *ngIf="!inchargement" id="pagination4" (pageChange)=" pagesfile = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+
+      </div>
+            </div>
             <div id="rendezvous" role="tabpanel" aria-labelledby="profile-tab" class="tab-pane fade   ">
               
              
@@ -224,14 +302,20 @@
               <div class="event-schedule-area-two bg-color ">
               
                 <div class="container">
-                    
+                  <div  *ngIf="inchargement" class="chargcontainer">
+                    <div class="image-container">
+                      <img [src]="charg"  >
+                    </div>
+                  </div>
                     <!-- row end-->
-                    <div class="row">
+                    <div  *ngIf="!inchargement" class="row">
                         
                             
                             <div class="tab-content" id="myTabContent">
                               <button (click)="tempaddrendez(templateaddrendez)" class="btn btn-primary new"><i class="fa fa-plus"></i> Planifier un rendez-vous</button>
-                    <br>
+                              <button  (click)="annuller()" id="deleteButton" class="btn btn-danger new" title="Supprimer"><i class="fa  fa-window-close"></i></button>
+
+                              <br>
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -244,7 +328,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let ev of events | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                                <tr *ngFor="let ev of events | paginate: {id:'pagination', itemsPerPage: 30, currentPage: pages}" class="inner-box">
                                                     <th scope="row">
                                                         <div class="event-date">
                                                             <span>{{ev.edate| date:'dd'}}-{{getMonthName(ev.edate| date:'MM')}}-{{ ev.etime | slice: 0:5 }}</span>
@@ -290,7 +374,12 @@
             </div>
             <div id="documents" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade  ">
               <div class="container flex-grow-1 light-style container-p-y">
-          <div class="container-m-nx container-m-ny bg-lightest mb-3">
+                <div  *ngIf="inchargement" class="chargcontainer">
+                  <div class="image-container">
+                    <img [src]="charg"  >
+                  </div>
+                </div>
+          <div *ngIf="!inchargement" class="container-m-nx container-m-ny bg-lightest mb-3">
               
             <button (click)="tempadddoc(templateadddoc)" class="btn btn-primary new"><i class="fa fa-plus"></i> Importer un nouveau document</button>
       
@@ -305,14 +394,14 @@
               
       
               
-              <div class="file-item" *ngFor="let file of listfiles | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pagesfile}">
+              <div class="file-item" *ngFor="let file of listfiles | paginate: {id:'pagination2', itemsPerPage: 10, currentPage: pagesfile}">
                   <div class="file-item-select-bg bg-primary"></div>
                   <label class="file-item-checkbox custom-control custom-checkbox">
                     
                       <span class="custom-control-label"></span>
                   </label>
                   <div class="file-item-icon fa fa-file-pdf-o text-secondary"></div>
-                  <a (click)="downloadfile(file.name)"  class="file-item-name">
+                  <a (click)="downloadfile(file.name,file.type)"  class="file-item-name">
                      {{file.name}}
                   </a>
                   <a   class="file-item-date">
@@ -320,8 +409,8 @@
                  </a>
                   <div class="file-item-changed"> </div>
                   <div class="btn-group">
-          <button id="editButton" (click)="tempmoddoc(templatemoddoc,file.name)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Edit"><i class="fa fa-edit"></i></button>
-          <button id="deleteButton"  (click)="deletedoc(file.name)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Delete"><i class="fa fa-trash"></i></button>
+          <button id="editButton" (click)="tempmoddoc(templatemoddoc,file.name,file.type)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Edit"><i class="fa fa-edit"></i></button>
+          <button id="deleteButton"  (click)="deletedoc(file.name,file.type)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Delete"><i class="fa fa-trash"></i></button>
         </div>
               </div>
       
@@ -335,7 +424,7 @@
       
               
           </div>
-          <pagination-controls id="pagination" (pageChange)=" pagesfile = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+          <pagination-controls *ngIf="!inchargement" id="pagination2" (pageChange)=" pagesfile = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
 
       </div>
             </div>
@@ -394,7 +483,8 @@
                     <input  class="input"   type="text" formControlName="ADRS" placeholder="Adresse ..">
               </div>
               <div class="col" >
-                
+                <label class="labelmod" for="DN">Date D'ajout <span>*</span></label>
+                <input   type="DATE"  formControlName="DA" placeholder="Date D'ajout ..">
               </div>
                 </div>
       
@@ -412,7 +502,64 @@
             </div>
             </div>
             </ng-template>    
+      
             
+            <ng-template #templateaddjoursrendez>
+              <div class="modal-header">
+                <h4 class="modal-title pull-left"> Fixer les jours de rendez-vous pour le patient</h4>
+                <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                  <span aria-hidden="true" class="visually-hidden">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+               
+                    
+                      <div class="c1">
+                      
+                        <div class="dayweek text-center">
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check1" value="1" (change)="toggleDay($event, 1, 'Lundi')"> Lundi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check2" value="2" (change)="toggleDay($event, 2, 'Mardi')"> Mardi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check3" value="3" (change)="toggleDay($event, 3, 'Mercredi')"> Mercredi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check4" value="4" (change)="toggleDay($event, 4, 'Jeudi')"> Jeudi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check5" value="5" (change)="toggleDay($event, 5, 'Vendredi')"> Vendredi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check6" value="6" (change)="toggleDay($event, 6, 'Samedi')"> Samedi
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="Check7" value="7" (change)="toggleDay($event, 7, 'Dimanche')"> Dimanche
+                          </label>
+                        </div>
+                        <br><br>
+                        <table *ngIf="weekday.length!=0" class="nbreseance-table">
+                          <tr class="nbreseance-row">
+                            <th class="nbreseance-header">Le Jour</th>
+                            <th class="nbreseance-header">L'Heure</th>
+                            
+                          </tr>
+                          <tr class="nbreseance-row" *ngFor="let item of this.weekday; let i = index">
+                            <td class="nbreseance-cell">{{ item.name }}</td>
+                           
+                            <td class="nbreseance-cell nbre">
+                              <input type="time" [value]="item.heure" (change)="updateTime($event, i)">
+                            </td>
+                            
+                          </tr>
+                         
+                        </table>
+                        <input *ngIf="weekday.length!=0" [disabled]="buttondisable==true" type="submit" (click)="addjourrend()" value="Changer">
+                </div>
+                </div>
+                </ng-template>  
             
             <!-- image profile-->
 <ng-template #templateimg>
@@ -457,7 +604,7 @@
             </div>
             <div class="col" >
               <label class="labelmod" > Remise<span>*</span> </label>
-              <input  formControlName="RMS"  (change)="tauxremisechange($event)" type="number" min="0" max="100" value=0>
+              <input [readOnly]="this.pris==true"  formControlName="RMS"  (change)="tauxremisechange($event)" type="number" min="0" max="100" value=0>
              
             </div>
               </div>
@@ -481,7 +628,7 @@
               
                 <div class="col">
                   <label class="labelmod" > Couverture D'Assurance</label>
-                  <select (change)="tauxchange($event)"   formControlName="ASSRID" >
+                  <select  [attr.disabled]="this.pris ==true ? true : null"  (change)="tauxchange($event)"   formControlName="ASSRID" >
                     <option   value="0" > Non assuré</option>
                     <option *ngFor="let assr of assurs"  value="{{assr.asid}}">{{assr.asnm}}</option>  
                   </select>
@@ -494,13 +641,26 @@
               
                 <div class="col" >
                   <label class="labelmod" >Le taux de couverture</label>
-                  <input (change)="tauxassurchange($event)" type="number"  min="0" max="100" value="0" formControlName="ASSRTAUX" >
+                  <input [readOnly]="this.pris==true" (change)="tauxassurchange($event)" type="number"  min="0" max="100" value="0" formControlName="ASSRTAUX" >
                 </div>
                 <div class="col" >
-                  <label class="labelmod">Notes </label>
-                  <textarea formControlName="NOTE" cols="40" rows="5"></textarea>
+                  <label class="labelmod">Pris en charge</label>
+                  <input  (change)="prischange($event)"  type="checkbox" formControlName="DPRIS" >
             </div>
                 </div>
+
+                <div class="row">
+                     
+                 
+                  <div class="col" >
+                    <label class="labelmod">Notes </label>
+                    <textarea formControlName="NOTE" cols="40" rows="5"></textarea>
+              </div>
+
+              <div class="col" >
+                    
+              </div>
+                  </div>
              
                
       
@@ -520,11 +680,11 @@
             <td class="nbreseance-cell nbre">
               <input type="number" #prixInput (input)="updateprix(i, prixInput.value)" value="{{ item.prix }}">
             </td>
-            <td class="nbreseance-cell nbre">
+            <td class="nbreseance-cell nbre2">
               <input type="number" #nbreInput (input)="updateNbre(i, nbreInput.value)" value="{{ item.nbre }}">
             </td>
             <td class="nbreseance-cell nbre">
-              <input type="number" readonly value="{{ item.prix *item.nbre }}">
+              <input type="number" readonly value="{{ (item.prix *item.nbre).toFixed(2)  }}">
             </td>
           </tr>
           <ng-container *ngIf="selected.length!=0">
@@ -544,11 +704,13 @@
             <td class="nbreseance-celltotal"></td>
             <td class="nbreseance-celltotal"></td>
             <td class="nbreseance-celltotal">Total Général </td>
-            <td class="nbreseance-celltotal">{{total()-(total()*remise)}}</td>
+            <td [hidden]="this.pris==true" class="nbreseance-celltotal">{{(total()-(total()*remise)) | number : '1.2-2'}}</td>
+            <td [hidden]="this.pris!=true" class="nbreseance-celltotal">{{0 | number : '1.2-2' }}</td>
+
           </tr>
           </ng-container>
         </table>
-        <ng-container *ngIf=" this.assurtaux!=0&& selected.length!=0" >
+        <ng-container *ngIf=" this.assurtaux!=0&& selected.length!=0 " >
 <span class="assurance"> Montant à payer : {{(total()-(total()*remise))*(1-assurtaux) | number : '1.2-2' }} Montant assuré : {{(total()-(total()*remise))*assurtaux | number : '1.2-2'}}</span>
 </ng-container>
 <br><br>
@@ -587,7 +749,7 @@
                 </div>
                 <div class="col" >
                   <label class="labelmod" > Remise<span>*</span> </label>
-                  <input  formControlName="RMS"  (change)="tauxremisechange($event)" type="number" min="0" max="100" value=0>
+                  <input [readOnly]="this.pris==true"   formControlName="RMS"  (change)="tauxremisechange($event)" type="number" min="0" max="100" value=0>
                  
                 </div>
                   </div>
@@ -611,7 +773,7 @@
                   
                     <div class="col">
                       <label class="labelmod" > Couverture D'Assurance</label>
-                      <select (change)="tauxchange($event)"   formControlName="ASSRID" >
+                      <select  [attr.disabled]="this.pris ==true ? true : null"  (change)="tauxchange($event)"   formControlName="ASSRID" >
                         <option   value="0" > Non assuré</option>
                         <option *ngFor="let assr of assurs"  value="{{assr.asid}}">{{assr.asnm}}</option>  
                       </select>
@@ -624,13 +786,26 @@
                   
                     <div class="col" >
                       <label class="labelmod" >Le taux de couverture</label>
-                      <input (change)="tauxassurchange($event)" type="number"  min="0" max="100" value="0" formControlName="ASSRTAUX" >
+                      <input  [readOnly]="this.pris==true" (change)="tauxassurchange($event)" type="number"  min="0" max="100" value="0" formControlName="ASSRTAUX" >
                     </div>
                     <div class="col" >
-                      <label class="labelmod">Notes </label>
-                      <textarea formControlName="NOTE" cols="40" rows="5"></textarea>
+                      <label class="labelmod" >Validation <span>*</span></label>
+                      <select  [attr.disabled]="this.role !== 'superadmin' ? true : null"  formControlName="DVALIDE" >
+                        <option   value=false >Encours</option>
+                        <option   value=true >Validé</option>
+                      </select>
                 </div>
                     </div>
+                    <div class="row">
+                      <div class="col" >
+                        <label class="labelmod">Notes </label>
+                        <textarea formControlName="NOTE" cols="40" rows="5"></textarea>
+                  </div>
+                   <div class="col" >
+                  <label class="labelmod">Pris en charge</label>
+                  <input  (change)="prischange($event)"  type="checkbox" formControlName="DPRIS" >
+                </div>
+            </div>
                  
                    
           
@@ -674,7 +849,9 @@
                 <td class="nbreseance-celltotal"></td>
                 <td class="nbreseance-celltotal"></td>
                 <td class="nbreseance-celltotal">Total Général </td>
-                <td class="nbreseance-celltotal">{{total()-(total()*remise)}}</td>
+                <td  [hidden]="this.pris==true" class="nbreseance-celltotal">{{total()-(total()*remise)| number : '1.2-2'}}</td>
+                <td [hidden]="this.pris!=true" class="nbreseance-celltotal">{{0 | number : '1.2-2' }}</td>
+                
               </tr>
               </ng-container>
             </table>
@@ -812,8 +989,115 @@
             </div>
             </div>
             </ng-template>  
-        
-             
+            <ng-template #templateaddcons>
+              <div class="modal-header">
+                <h4 class="modal-title pull-left">Ajouter une nouvelle consultation</h4>
+                <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                  <span aria-hidden="true" class="visually-hidden">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+               
+                    
+                      <div class="c1">
+                        <form [formGroup]="formAddcons" (ngSubmit)="addcons()" >
+                          <div class="row">
+                        <div class="col" >
+                          <label class="labelmod" for="Nom">Date <span>*</span></label>
+                          <input  class="input"   type="date" formControlName="CDATE" >
+                        </div>
+                        <div class="col" >
+                          <label class="labelmod" >DIAGNOSTIQUE<span>*</span> </label>
+                          <textarea formControlName="CDIAG" cols="40" rows="2"></textarea>
+                         
+                        </div>
+                          </div>
+                          <div class="row">
+                            <div class="col" >
+                              <label class="labelmod" >ATCD<span>*</span> </label>
+                              <textarea formControlName="CATCD" cols="40" rows="2"></textarea>
+                            </div>
+                            <div class="col" >
+                              <label class="labelmod" >HDM<span>*</span> </label>
+                              <textarea formControlName="CHDM" cols="40" rows="7"></textarea>
+                        </div>
+                           
+                  
+                        
+                          </div>
+                         
+                         
+                  
+                  
+            
+                          <div  *ngIf="formAddcons.invalid">
+                            <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                          </div>
+                          <input type="submit" [disabled]="buttondisable==true"  value="Ajouter">
+                         
+                         
+                     
+            
+                    
+                        </form>
+            
+                </div>
+                </div>
+                </ng-template>        
+                <ng-template #templatemodcons>
+                  <div class="modal-header">
+                    <h4 class="modal-title pull-left"> Mettre à jour une consultation</h4>
+                    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                      <span aria-hidden="true" class="visually-hidden">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                   
+                        
+                          <div class="c1">
+                            <form [formGroup]="formAddcons" (ngSubmit)="modcons()" >
+                             
+                             
+                              <div class="row">
+                                <div class="col" >
+                                  <label class="labelmod" for="Nom">Date <span>*</span></label>
+                                  <input  class="input"   type="date" formControlName="CDATE" >
+                                </div>
+                                <div class="col" >
+                                  <label class="labelmod" >DIAGNOSTIQUE<span>*</span> </label>
+                                  <textarea formControlName="CDIAG" cols="40" rows="2"></textarea>
+                                 
+                                </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col" >
+                                      <label class="labelmod" >ATCD<span>*</span> </label>
+                                      <textarea formControlName="CATCD" cols="40" rows="2"></textarea>
+                                    </div>
+                                    <div class="col" >
+                                      <label class="labelmod" >HDM<span>*</span> </label>
+                                      <textarea formControlName="CHDM" cols="40" rows="7"></textarea>
+                                </div>
+                                   
+                          
+                                
+                                  </div>
+                      
+                
+                              <div  *ngIf="formAddcons.invalid">
+                                <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+                              </div>
+                              <input type="submit" [disabled]="buttondisable==true"  value="Modifier">
+                             
+                             
+                         
+                
+                        
+                            </form>
+                
+                    </div>
+                    </div>
+                    </ng-template>  
 <ng-template #templateadddoc>
   <div class="modal-header">
     <h4 class="modal-title pull-left">Importer un nouveau document</h4>
@@ -875,188 +1159,188 @@
     </button>
   </div>
   
-    <div class="height-100 ">
-      <div class="btm"><br></div>
-     
-      <div class="container ">
-          <!-- For demo purpose -->
+  <tabset  [justified]="true" >
+         
+    <tab id="seance" (selectTab)="selectseance()" [active]="true"  >   <ng-template  tabHeading>
+      <span class="title">Les Séances </span>
+    </ng-template>
+<div class="btm"><br></div>
+        
+          <!-- <select    class="dropdown-toggle">
+            <option  class="dropdown-item" ></option>
+            <option class="dropdown-item">Masculin</option>
+          </select> -->
+                    
           
-          <div class="p-5 bg-white rounded shadow mb-5">
-            <!-- Lined tabs-->
-            <ul id="myTab2" role="tablist" class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center">
-              <li class="nav-item flex-sm-fill">
-                <a id="seances" data-toggle="tab" (click)="showTab('seances',false)" role="tab" aria-controls="home2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 active">Les Séances</a>
-              </li>
-              <li class="nav-item flex-sm-fill">
-                <a id="paiements" data-toggle="tab" (click)="showTab('paiements',false)" role="tab" aria-controls="profile2" aria-selected="true"  class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 ">les Paiements</a>
-              </li>
-              
-            </ul>
-            <div id="myTab2Content" class="tab-content">
-              <div id="seances" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show  active ">
-                <div class="btm"><br></div>
+          <button *ngIf="!inchargementdetails" (click)="tempaddseance(templateaddseance)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+          <button *ngIf="!inchargementdetails" (click)="statseance()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
+          <div  *ngIf=" inchargementdetails" class="chargcontainer">
+            <div class="image-container">
+              <img [src]="charg"  >
+            </div>
+          </div> 
+        <div *ngIf="!inchargementdetails" class="event-schedule-area-two bg-color ">
+
+            <div class="container">
                 
-                  <!-- <select    class="dropdown-toggle">
-                    <option  class="dropdown-item" ></option>
-                    <option class="dropdown-item">Masculin</option>
-                  </select> -->
-                            
-                  
-                  <button  (click)="tempaddseance(templateaddseance)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
-                  <button  (click)="statseance()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
-
-                <div class="event-schedule-area-two bg-color ">
-  
-                    <div class="container">
+                <!-- row end-->
+                <div class="row">
+                    
                         
-                        <!-- row end-->
-                        <div class="row">
-                            
-                                
-                                <div class="tab-content" id="myTabContent">
-                                
-                        <br>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" scope="col">Date</th>
-                                        <th  scope="col">Détails</th>
-                                        <th scope="col">Actions</th>
-                                       
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let seance of seances  | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}" class="inner-box">
-                                        <th scope="row">
-                                            <div class="event-date">
-                                                
-                                                <span>{{seance.sdate| date:'dd'}}-{{getMonthName(seance.sdate| date:'MM')}}-{{seance.sdate| date:'yyyy'}}</span>
-                                                
-                                            </div>
-                                        </th>
-                                        
-                                        <td>
-                                          <ng-container *ngFor="let detail of seance.details; let i = index">
-                                            <span class="badge badge-dot mr-4">
-                                              <i class="bg-success"></i> {{ gettraitById(detail.split(',')[0]) }} [{{ detail.split(',')[1] }}]
-                                            </span>
-                                            <br>
-                                            </ng-container>
-                                        
-                                        </td>
-                                        <td>
-                                            <div class="primary-btn">
-                                             
-                                              <button id="editButton" (click)="tempmodseance(templatemodseance,seance.sid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
-                                              <button id="deleteButton" (click)="delseance(seance.sid)"  class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
-                                            </div>
-                                        </td>
-                                     
-                                    </tr>
-                                   
-                                </tbody>
-                            </table>
-                            <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
-
-                        </div>
-                                    </div>
-                           
-                               
-                              
-                            
-                            <!-- /col end-->
-                        </div>
-                        <!-- /row end-->
-                    </div>
-                </div>
-
-            </div>
-              <div id="paiements" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show   ">
-                <div class="btm"><br></div>
-              
-
-                  <!-- <select    class="dropdown-toggle">
-                    <option  class="dropdown-item" ></option>
-                    <option class="dropdown-item">Masculin</option>
-                  </select> -->
-                                 <button    (click)="tempaddpaie(templateaddpaie)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
-                                 <button  (click)="statpaie()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
-
-                <div class="event-schedule-area-two bg-color ">
-  
-                    <div class="container">
+                        <div class="tab-content" id="myTabContent">
                         
-                        <!-- row end-->
-                        <div class="row">
-                            
-                                
-                                <div class="tab-content" id="myTabContent">
-                                
-                        <br>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th  scope="col">Date</th>
-                                        <th  scope="col">Détails</th>
-                                        <th   scope="col">Actions</th>
-                                       
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let paie of paiements  | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}" class="inner-box">
-                                        <th scope="row">
-                                            <div class="event-date">
-                                                
-                                                <span> {{paie.pdate| date:'dd'}}-{{getMonthName(paie.pdate| date:'MM')}}-{{paie.pdate| date:'yyyy'}}</span>
-                                               
-                                            </div>
-                                        </th>
-                                        
-                                        <td>
-                                            <div class="event-wrap">
-                                                   
-                                                    <div class="categories">
-                                                        <a class="mnt"> {{paie.pmnt| number : '1.2-2'}} UM</a>
-                                                        <a class="mode">{{getmodeById(paie.pmode)}}</a>
-                                                    </div>
-                                               
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="primary-btn">
-                                             
-                                              <button id="editButton" (click)="tempmodpaie(templatemodpaie,paie.pid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
-                                              <button id="deleteButton" (click)="delpaie(paie.pid)"  class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
-                                            </div>
-                                        </td>
-                                     
-                                    </tr>
-                                   
-                                </tbody>
-                            </table>
-                            <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
-
-                        </div>
-                                    </div>
-                           
+                <br>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col">Date</th>
+                                <th  scope="col">Détails</th>
+                                <th scope="col">Actions</th>
                                
-                              
-                            
-                            <!-- /col end-->
-                        </div>
-                        <!-- /row end-->
-                    </div>
-                </div>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let seance of seances  | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}" class="inner-box">
+                                <th scope="row">
+                                    <div class="event-date">
+                                        
+                                        <span>{{seance.sdate| date:'dd'}}-{{getMonthName(seance.sdate| date:'MM')}}-{{seance.sdate| date:'yyyy'}}</span>
+                                        
+                                    </div>
+                                </th>
+                                
+                                <td>
+                                  <ng-container *ngFor="let detail of seance.details; let i = index">
+                                    <span class="badge badge-dot mr-4">
+                                      <i class="bg-success"></i> {{ gettraitById(detail.split(',')[0]) }} [{{ detail.split(',')[1] }}]
+                                    </span>
+                                    <br>
+                                    </ng-container>
+                                
+                                </td>
+                                <td>
+                                    <div class="primary-btn">
+                                     
+                                      <button id="editButton" [disabled]="seance.svalide && this.role!='superadmin'"  (click)="tempmodseance(templatemodseance,seance.sid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                      <button id="deleteButton" [disabled]="seance.svalide && this.role!='superadmin'"  (click)="delseance(seance.sid)"  class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </td>
+                             
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                    <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
 
+                </div>
+                            </div>
+                   
+                       
+                      
+                    
+                    <!-- /col end-->
+                </div>
+                <!-- /row end-->
             </div>
+        </div>
+
+
+    </tab>
+
+
+<tab   (selectTab)="selectpaie()" >   <ng-template  tabHeading>
+      <span class="title">les Paiements </span>
+    </ng-template>
+
+<div class="btm"><br></div>
+      
+
+          <!-- <select    class="dropdown-toggle">
+            <option  class="dropdown-item" ></option>
+            <option class="dropdown-item">Masculin</option>
+          </select> -->
+                         <button  *ngIf="!inchargementdetails"  (click)="tempaddpaie(templateaddpaie)" class="btn btn-primary btn-circle btn-circle-sm m-1 " title="Ajouter"><i class="fa fa-plus "></i></button>
+                         <button  *ngIf="!inchargementdetails" (click)="statpaie()" class="btn btn-warning btn-circle btn-circle-sm m-1 " title="Statistique"><i class="fa fa-line-chart"></i></button>
+                         <div  *ngIf="inchargementdetails" class="chargcontainer">
+                          <div class="image-container">
+                            <img [src]="charg"  >
+                          </div>
+                        </div> 
+        <div *ngIf="!inchargementdetails" class="event-schedule-area-two bg-color ">
+
+            <div class="container">
+                
+                <!-- row end-->
+                <div class="row">
+                    
+                        
+                        <div class="tab-content" id="myTabContent">
+                        
+                <br>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th  class="text-center"   scope="col">Date</th>
+                                <th  scope="col">Détails</th>
+                                <th   scope="col">Actions</th>
+                               
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let paie of paiements  | paginate: {id:'pagination', itemsPerPage: 20, currentPage: pages}" class="inner-box">
+                                <th scope="row">
+                                    <div class="event-date">
+                                        
+                                        <span> {{paie.pdate| date:'dd'}}-{{getMonthName(paie.pdate| date:'MM')}}-{{paie.pdate| date:'yyyy'}}</span>
+                                       
+                                    </div>
+                                </th>
+                                
+                                <td>
+                                    <div class="event-wrap">
+                                           
+                                            <div class="categories">
+                                                <a class="mnt"> {{paie.pmnt| number : '1.2-2'}} UM</a>
+                                                <a class="mode">{{getmodeById(paie.pmode)}}</a>
+                                            </div>
+                                       
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="primary-btn">
+                                     
+                                      <button id="editButton" [disabled]="paie.pvalide && this.role!='superadmin'" (click)="tempmodpaie(templatemodpaie,paie.pid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                      <button id="deleteButton" [disabled]="paie.pvalide && this.role!='superadmin'"  (click)="delpaie(paie.pid)"  class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </td>
+                             
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                    <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+
+                </div>
+                            </div>
+                   
+                       
+                      
+                    
+                    <!-- /col end-->
+                </div>
+                <!-- /row end-->
             </div>
-          </div>
-      </div>
-         </div>
+        </div>
+
+    </tab>
+
+
+
+</tabset>    
 
 </dialog>
 
@@ -1184,6 +1468,11 @@ formControlName="SN"
                           <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
                     </div>
                     <div class="col" >
+                      <label class="labelmod" >Validation <span>*</span></label>
+                      <select  [attr.disabled]="this.role !== 'superadmin' ? true : null"  formControlName="SVALIDE" >
+                        <option   value=false >Encours</option>
+                        <option   value=true >Validé</option>
+                      </select>
                     </div>
                    
                   </div>
@@ -1315,13 +1604,23 @@ formControlName="SN"
                       <input  class="input"   type="number" formControlName="MNT" >
               </div>
               <div class="col" >
-                <label class="labelmod">Notes  </label>
-                <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
+                <label class="labelmod" >Validation <span>*</span></label>
+                <select  [attr.disabled]="this.role !== 'superadmin' ? true : null"  formControlName="PVALIDE" >
+                  <option   value=false >Encours</option>
+                  <option   value=true >Validé</option>
+                </select>
               </div>
+             
               
             </div>
             
-                
+            <div class="row">
+              <div class="col" >
+                <label class="labelmod">Notes  </label>
+                <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
+              </div>
+              <div class="col" ></div>
+              </div> 
         
         
                 
@@ -1420,7 +1719,9 @@ formControlName="SN"
       <section class="py-3 py-md-5">
         <div class="row">
           <div class="col-12 text-end">
-            <button (click)="printinvoice()" class="btn btn-primary mb-3 impr">Imprimer</button>
+            <button (click)="printinvoice('btninvoice')" class="btn btn-primary mb-3 impr">Imprimer</button>
+            <button  *ngIf=" this.role=='superadmin'&& dossierinfo?.dvalide!=true" id="editButton" (click)="validedossier(dossierinfo?.did)" class="btn btn-success  mb-3 vald "><i class="fa fa-check"></i></button>
+
             
           </div>
         </div>
@@ -1440,7 +1741,7 @@ formControlName="SN"
                   <h5>patient : </h5>
                   <address>
                     <strong>Nom : {{this.infospat?.pnom}}</strong><br>
-                    Telephone : {{this.infospat?.ptel}} <br>
+                    Téléphone : {{this.infospat?.ptel}} <br>
                     Date Naissance : {{this.infospat?.pnai | date:'dd-MM-yyyy'}}<br>
                   </address>
                 </div>
@@ -1522,5 +1823,60 @@ formControlName="SN"
       </section>
       
         </dialog>
+
+
+        <dialog id="invoicecons">
+          <div class="modal-header">
+            <h4 class="modal-title pull-left">Consultation Infos :  </h4>
+            <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#invoicecons')">
+              <span aria-hidden="true" class="visually-hidden">&times;</span>
+            </button>
+          </div>
+          <section class="py-3 py-md-5">
+            <div class="row">
+              <div class="col-12 text-end">
+                <button (click)="printinvoice('btncons')" class="btn btn-primary mb-3 impr">Imprimer</button>
+           
+    
+                
+              </div>
+            </div>
+            <div class="container">
+              <div class="row justify-content-center">
+                <div class="col-12 col-lg-9 col-xl-9 col-xxl-9">
+                  <div class="row gy-3 mb-3">
+                    <div class="col-8">
+                      <h2 class="text-uppercase text-endx m-0">Jemila Centre de Kinesitherapie</h2>
+                    </div>
+                    <div class="col-4">
+                      <a class="d-block text-end" href="#!">
+                        <img src="{{logo}}" class="img-fluid" width="135" height="44">
+                      </a>
+                    </div>
+                    <div class="col-12">
+                      <h5>patient : </h5>
+                      <address>
+                        <strong>Nom : {{this.infospat?.pnom}}</strong><br>
+                        Téléphone : {{this.infospat?.ptel}} <br>
+                        Date Naissance : {{this.infospat?.pnai | date:'dd-MM-yyyy'}}<br>
+                        Date Consultation : {{this.consinfo?.cdate | date:'dd-MM-yyyy'}}<br>
+                      </address>
+                    </div>
+                  </div>
+                  
+                 
+                    <div class="col-12">
+                     <span style="color:grey"> DIAGNOSTIQUE   </span><br>{{this.consinfo?.cdiag}}<br><br>
+                    <span style="color:grey"> ATCD  </span><br> {{this.consinfo?.catcd}} <br><br>
+                  <span style="color:grey"> HDM  </span><br> {{this.consinfo?.chdm}}<br>
+                    </div>
+                
+                 
+                </div>
+              </div>
+            </div>
+          </section>
+          
+            </dialog>     
  </html>
  

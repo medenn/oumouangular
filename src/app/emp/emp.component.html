@@ -1,57 +1,59 @@
 <html>
     
-    <body  id="body-pd">
-        <header class="header" id="header">
-            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
-			
-           <div class="header_user">
-        <div class="header_text">Meden Belkasem</div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
-    </div>
-        </header>
+<body  id="body-pd">
+  <header class="header" id="header">
+      <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
 
-        <div class="l-navbar" id="nav-bar">
-            <nav class="nav">
-                <div> 
-                    <a href="#" class="nav_logo"> 
-                        <i class='bx bx-layer nav_logo-icon'></i> 
-                        <span class="nav_logo-name">CKRF</span> 
-                    </a>
-                    <div class="nav_list"> 
-                       
-                        <a href="#" class="nav_link active"> 
-                            <i class='bx bx-user nav_icon'></i> 
-                            <span class="nav_name">Patients</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calendar nav_icon'></i> 
-                            <span class="nav_name">Rendez-Vous</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calculator nav_icon'></i> 
-                            <span class="nav_name">Comptabilité</span> 
-                        </a> 
-                        
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
-                            <span class="nav_name">Statistique</span> 
-                        </a> 
-                        <a href="#" class="nav_link "> 
-                          <i class='bx bx-grid-alt nav_icon'></i> 
-                          <span class="nav_name">RH</span> 
-                      </a> 
-                        <a href="#" class="nav_link"> 
-                          <i class='bx bx-certification nav_icon'></i> 
-                          <span class="nav_name">Administration</span> 
-                      </a> 
-                    </div>
-                </div> 
-                <a href="#" class="nav_link"> 
-                    <i class='bx bx-log-out nav_icon'></i> 
-                    <span class="nav_name">Déconnexion</span> 
-                </a>
-            </nav>
-        </div>
+     <div class="header_user">
+      <div class="header_text">{{this.username}}</div>
+      <div class="header_img"> <img src="assets/profiles/users/img{{this.username}}.png"  onerror="this.src='assets/profiles/defaut.png'" alt=""> </div>
+</div>
+  </header>
+
+  <div class="l-navbar" id="nav-bar">
+      <nav class="nav">
+          <div> 
+            
+              <a class="nav_logo"  >
+                <img id="logo" src="{{logo}}" class="img-fluid" width="0" height="0">
+                
+                
+              </a>
+              <div class="nav_list"> 
+                 
+                  <a routerLink="/patient"  class="nav_link "> 
+                      <i class='bx bx-user nav_icon'></i> 
+                      <span class="nav_name">Patients</span> 
+                  </a> 
+                  <a routerLink="/events"  class="nav_link"> 
+                      <i class='bx bx-calendar nav_icon'></i> 
+                      <span class="nav_name">Rendez-Vous</span> 
+                  </a> 
+                  <a routerLink="/compta"  class="nav_link"> 
+                      <i class='bx bx-calculator nav_icon'></i> 
+                      <span class="nav_name">Activités</span> 
+                  </a> 
+                  
+                  <a routerLink="/stat"  class="nav_link"> 
+                      <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                      <span class="nav_name">Statistique</span> 
+                  </a> 
+                  <a routerLink="/employes"  class="nav_link active"> 
+                    <i class='bx bx-grid-alt nav_icon'></i> 
+                    <span class="nav_name">Employés</span> 
+                </a> 
+                  <a   *ngIf="this.role=='superadmin'"  routerLink="/parametres"  class="nav_link"> 
+                    <i class='bx bx-certification nav_icon'></i> 
+                    <span class="nav_name">Administration</span> 
+                </a> 
+              </div>
+          </div> 
+          <a (click)="logout()"  class="nav_link"> 
+              <i class='bx bx-log-out nav_icon'></i> 
+              <span class="nav_name">Déconnexion</span> 
+          </a>
+      </nav>
+  </div>
 
         <div class="height-100 bg-light">
             <div class="container">
@@ -140,8 +142,12 @@
         </div>
       </div>
     <input  [(ngModel)]="date" class="monthsearch" (ngModelChange)="getinfobydate($event)"  type="month" min="2023-04"    >
-    <button id="editButton" (click)="tempbulletin()" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-file"></i></button>
+    
+    <button id="editButton" (click)="tempbulletin()" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Bulletin de Paie"><i class="fa fa-file"></i></button>
+    
+    <button id="editButton" (click)="calculbulletin()" class="btn btn-warning btn-circle btn-circle-sm m-1" title="Calculer Salaire"><i class="fa fa-calculator"></i></button>
 
+    <button id="editButton" (click)=" tempdetailpointage()" class="btn btn-secondary btn-circle btn-circle-sm m-1" title="Calculer Salaire"><i class="fa fa-calendar-check-o"></i></button>
 
     <div class="container ">
         <!-- For demo purpose -->
@@ -158,6 +164,9 @@
             <li class="nav-item flex-sm-fill">
               <a id="avss" data-toggle="tab" (click)="showTab('avss',true)" role="tab" aria-controls="contact2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold rounded-0">Avances/Prêts </a>
             </li>
+            <li class="nav-item flex-sm-fill">
+              <a id="documents" data-toggle="tab" (click)="showTab('documents',true)" role="tab" aria-controls="contact2" aria-selected="false"  class="nav-link text-uppercase font-weight-bold rounded-0">Documents</a>
+            </li>
           </ul>
           <div id="myTab2Content" class="tab-content">
             <div id="absences" role="tabpanel" aria-labelledby="home-tab" class="tab-pane fade show active  ">
@@ -165,9 +174,13 @@
               <div class="event-schedule-area-two bg-color ">
               
                 <div class="container">
-                    
+                  <div  *ngIf="inchargement" class="chargcontainer">
+                    <div class="image-container">
+                      <img [src]="charg"  >
+                    </div>
+                  </div> 
                     <!-- row end-->
-                    <div class="row">
+                    <div *ngIf="!inchargement" class="row">
                         
                             
                             <div class="tab-content" id="myTabContent">
@@ -186,7 +199,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let ab of Absences | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                                <tr *ngFor="let ab of Absences | paginate: {id:'pagination1', itemsPerPage: 20, currentPage: pages}" class="inner-box">
                                                     <th scope="row">
                                                         <div class="event-date">
                                                             <span>{{ab.ad| date:'dd'}}-{{getMonthName(ab.ad| date:'MM')}}-{{ ab.ad | date:'yyyy' }}</span>
@@ -220,7 +233,7 @@
                                                 
                                             </tbody>
                                         </table>
-                                        <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+                                        <pagination-controls id="pagination1" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
 
                                     </div>
                                 </div>
@@ -241,9 +254,13 @@
               <div class="event-schedule-area-two bg-color ">
               
                 <div class="container">
-                    
+                  <div  *ngIf="inchargement" class="chargcontainer">
+                    <div class="image-container">
+                      <img [src]="charg"  >
+                    </div>
+                  </div> 
                     <!-- row end-->
-                    <div class="row">
+                    <div   *ngIf="!inchargement" class="row">
                         
                             
                             <div class="tab-content" id="myTabContent">
@@ -261,7 +278,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let prm of Primes | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                                <tr *ngFor="let prm of Primes | paginate: {id:'pagination2', itemsPerPage: 20, currentPage: pages}" class="inner-box">
                                                     <th scope="row">
                                                         <div class="event-date">
                                                             <span>{{prm.pd| date:'dd'}}-{{getMonthName(prm.pd| date:'MM')}}-{{ prm.pd| date:'yyyy' }}</span>
@@ -294,7 +311,7 @@
                                                 
                                             </tbody>
                                         </table>
-                                        <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+                                        <pagination-controls id="pagination2" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
 
                                     </div>
                                 </div>
@@ -314,9 +331,13 @@
               <div class="event-schedule-area-two bg-color ">
               
                 <div class="container">
-                    
+                  <div  *ngIf="inchargement" class="chargcontainer">
+                    <div class="image-container">
+                      <img [src]="charg"  >
+                    </div>
+                  </div> 
                     <!-- row end-->
-                    <div class="row">
+                    <div  *ngIf="!inchargement" class="row">
                         
                             
                             <div class="tab-content" id="myTabContent">
@@ -335,7 +356,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let avss of Avances | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pages}" class="inner-box">
+                                                <tr *ngFor="let avss of Avances | paginate: {id:'pagination3', itemsPerPage: 20, currentPage: pages}" class="inner-box">
                                                     <th scope="row">
                                                         <div class="event-date">
                                                             <span>{{getMonthName(avss.ad| date:'MM')}}-{{ avss.ad| date:'yyyy' }}</span>
@@ -380,7 +401,7 @@
                                                 
                                             </tbody>
                                         </table>
-                                        <pagination-controls id="pagination" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+                                        <pagination-controls id="pagination3" (pageChange)=" pages = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
 
                                     </div>
                                   
@@ -394,6 +415,62 @@
                     <!-- /row end-->
                 </div>
             </div>      
+            </div>
+            <div id="documents" role="tabpanel" aria-labelledby="contact-tab" class="tab-pane fade  ">
+              <div class="container flex-grow-1 light-style container-p-y">
+                <div  *ngIf="inchargement" class="chargcontainer">
+                  <div class="image-container">
+                    <img [src]="charg"  >
+                  </div>
+                </div>
+          <div *ngIf="!inchargement" class="container-m-nx container-m-ny bg-lightest mb-3">
+              
+            <button (click)="tempadddoc(templateadddoc)" class="btn btn-primary new"><i class="fa fa-plus"></i> Importer un nouveau document</button>
+      
+              <hr class="m-0" />
+          </div>
+      
+          <div class="file-manager-container file-manager-col-view">
+              
+      
+             
+      
+              
+      
+              
+              <div class="file-item" *ngFor="let file of listfiles | paginate: {id:'pagination5', itemsPerPage: 10, currentPage: pagesfile}">
+                  <div class="file-item-select-bg bg-primary"></div>
+                  <label class="file-item-checkbox custom-control custom-checkbox">
+                    
+                      <span class="custom-control-label"></span>
+                  </label>
+                  <div class="file-item-icon fa fa-file-pdf-o text-secondary"></div>
+                  <a (click)="downloadfile(file.name,file.type)"  class="file-item-name">
+                     {{file.name}}
+                  </a>
+                  <a   class="file-item-date">
+                    {{file.creationDate | date:'dd-MM-yyyy'}}
+                 </a>
+                  <div class="file-item-changed"> </div>
+                  <div class="btn-group">
+          <button id="editButton" (click)="tempmoddoc(templatemoddoc,file.name,file.type)"  class="btn btn-primary btn-circle btn-circle-sm m-1" title="Edit"><i class="fa fa-edit"></i></button>
+          <button id="deleteButton"  (click)="deletedoc(file.name,file.type)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Delete"><i class="fa fa-trash"></i></button>
+        </div>
+              </div>
+      
+            
+
+             
+      
+              
+      
+              
+      
+              
+          </div>
+          <pagination-controls *ngIf="!inchargement" id="pagination5" (pageChange)=" pagesfile = $event" previousLabel="Précédente" nextLabel="Suivante" class="page"></pagination-controls>
+
+      </div>
             </div>
           </div>
           <!-- End lined tabs -->
@@ -449,7 +526,8 @@
                           <input  class="input"   type="number" formControlName="SAL" placeholder="Salaire ..">
                     </div>
                     <div class="col" >
-                      
+                      <label class="labelmod" for="DN">Date Fin <span>*</span></label>
+                  <input   type="DATE"  formControlName="EDF" placeholder="Date Fin ..">
                     </div>
                       </div>
           
@@ -828,163 +906,254 @@
     </form>
   </div>
   </div>
-</ng-template>    
+</ng-template>  
 
+<ng-template #templateaddPointage>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Enregistrer Pointage</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closepoint()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="c1">
+    <form [formGroup]=" formPoint" (ngSubmit)="addpointage()" >
+      <div class="row">
+        <div class="col" >
+      <label class="labelmod" >Date  <span>*</span></label>
+      <input   type="DATE" formControlName="PDATE" placeholder="Date ">
+    </div>
+    <div class="col" >
+      <label class="labelmod" >Heure de début <span>*</span></label>
+      <input   type="time" formControlName="PTIMEA" placeholder="Heure de début ">
+    </div>
+      </div>
 
+      <div class="row">
+        <div class="col" >
+       <label class="labelmod" >Heure de fin </label>
+      <input   type="time" formControlName="PTIMED" placeholder="Heure de fin">
+    </div>
+    <div class="col" >
+	<label class="labelmod" >Note </label>
+          <input  type="text"  formControlName="PNOTE" placeholder="Note..">
+    </div>
+      </div>
+      <br>
+   
+      <div  *ngIf="formPoint.invalid">
+        <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+      </div>
+
+      <input type="submit" value="Ajouter"  [disabled]="buttondisable==true">
+
+    </form>
+  </div>
+  </div>
+</ng-template>
+<ng-template #templatemodPointage>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Modifier Pointage</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closepoint()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="c1">
+    <form [formGroup]=" formPoint" (ngSubmit)="modpointage()" >
+      <div class="row">
+        <div class="col" >
+      <label class="labelmod" >Date  <span>*</span></label>
+      <input   type="DATE" formControlName="PDATE" placeholder="Date ">
+    </div>
+    <div class="col" >
+      <label class="labelmod" >Heure de début <span>*</span></label>
+      <input   type="time" formControlName="PTIMEA" placeholder="Heure de début ">
+    </div>
+      </div>
+
+      <div class="row">
+        <div class="col" >
+       <label class="labelmod" >Heure de fin </label>
+      <input   type="time" formControlName="PTIMED" placeholder="Heure de fin">
+    </div>
+    <div class="col" >
+	<label class="labelmod" >Note </label>
+          <input  type="text"  formControlName="PNOTE" placeholder="Note..">
+    </div>
+      </div>
+      <br>
+   
+      <div  *ngIf="formPoint.invalid">
+        <div   class="errorModEmp" >les champs avec étoiles sont obligatoires</div>
+      </div>
+
+      <input type="submit" value="Modifier"  [disabled]="buttondisable==true">
+
+    </form>
+  </div>
+  </div>
+</ng-template>
+
+<dialog id="details">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Remboursement des Avances Salaire / Prêt</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#details')">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="event-schedule-area-two bg-color ">
+              
+    <div class="container">
+      
+        <!-- row end-->
+        <div  class="row">
+            
+                
+                <div class="tab-content" id="myTabContent">
+        <br>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" scope="col">Date </th>
+                                        <th scope="col">Montant</th>  
+                                        <th  scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let avss of Avancefilter | paginate: {id:'pagination', itemsPerPage: 10, currentPage: pagesavss}" class="inner-box">
+                                        <th scope="row">
+                                            <div class="event-date">
+                                                <span>{{getMonthName(avss.ad| date:'MM')}}-{{ avss.ad| date:'yyyy' }}</span>
+                                               
+                                            </div>
+                                        </th>
+                                       
+                                       
+                                       
+                                        <td>
+                                          <div class="r-no">
+                                            <span >
+                                              {{ avss.amp | number : '1.2-2'}} UM
+                                          </span>
+                                          </div>
+                                      </td>
+                                        <td>
+                                            <div class="primary-btn">
+                                              <button id="deleteButton" (click)="deletsousemp(avss.aid,avss.details,avss.ad)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    
+                                    
+                                </tbody>
+                            </table>
+                            <pagination-controls id="pagination" (pageChange)=" pagesavss = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+
+                        </div>
+                      
+                    </div>
+           
+               
+              
+            
+            <!-- /col end-->
+        </div>
+        <!-- /row end-->
+    </div>
+</div> 
+  </dialog>
 
 <dialog id="bulletin">
   <div class="modal-header">
-    <h4 class="modal-title pull-left"> bulletin de paie {{getMonthName(this.date| date:'MM')}} {{this.date| date:'yyyy'}} </h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#bulletin')">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-    <div class="event-schedule-area-two bg-color ">
-              
-      <div class="container">
-          
-          <!-- row end-->
-          <div class="row">
-              
-                  
-                  <div class="tab-content" id="myTabContent">
-                    <div  *ngIf="inchargementbull" class="chargcontainer">
-                      <div class="image-container">
-                        <img [src]="charg"  >
-                      </div>
-                    </div> 
-      <div *ngIf="!inchargementbull" class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="text-center" scope="col">Libellé </th>
-                    <th class="text-center">Montant</th>
-                 
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="inner-box">
-                    <th scope="row">
-                        <div class="event-date">
-                            <span>SALAIRE</span>
-                           
-                        </div>
-                    </th>
-                    <th scope="row">
-                      <div class="event-date">
-                          <span> {{ this.bulletin?.sal | number : '1.2-2'}} UM</span>
-                         
-                      </div>
-                  </th>
-                   
-                </tr>
-                <tr class="inner-box">
-                  <th scope="row">
-                      <div class="event-date">
-                          <span>PRIME</span>
-                         
-                      </div>
-                  </th>
-                  <th scope="row">
-                    <div class="event-date">
-                        <span> {{ this.bulletin?.prim | number : '1.2-2'}} UM</span>
-                       
-                    </div>
-                </th>
-                 
-              </tr>
-              <tr class="inner-box">
-                <th scope="row">
-                    <div class="event-date">
-                        <span>ABSENCE</span>
-                       
-                    </div>
-                </th>
-                <th scope="row">
-                  <div class="event-date">
-                      <span> {{ this.bulletin?.absmont | number : '1.2-2'}} UM</span>
-                     
-                  </div>
-              </th>
-               
-            </tr>
-
-            <tr class="inner-box">
-              <th scope="row">
-                  <div class="event-date">
-                      <span>AVSS</span>
-                     
-                  </div>
-              </th>
-              <th scope="row">
-                <div class="event-date">
-                    <span> {{ this.bulletin?.sous | number : '1.2-2'}} UM</span>
-                   
-                </div>
-            </th>
-             
-          </tr>
-
-          <tr class="inner-box">
-            <th scope="row">
-                <div class="event-date">
-                    <span>PRÊT</span>
-                   
-                </div>
-            </th>
-            <th scope="row">
-              <div class="event-date">
-                  <span> {{ this.bulletin?.pret | number : '1.2-2'}} UM</span>
-                 
-              </div>
-          </th>
-           
-        </tr>
-
-        <tr class="inner-box">
-          <th scope="row">
-              <div class="event-date">
-                  <span>CONGÉ</span>
-                 
-              </div>
-          </th>
-          <th scope="row">
-            <div class="event-date">
-                <span> {{ this.bulletin?.conger | number : '1.2-2'}} UM</span>
-               
-            </div>
-        </th>
-         
-      </tr>
-
-      <tr class="inner-box">
-        <th scope="row">
-            <div class="event-date">
-                <span style="color:red">NET À PAYER</span>
-               
-            </div>
-        </th>
-        <th scope="row">
-          <div class="event-date">
-              <span style="color:red"> {{ this.bulletin?.netpayer | number : '1.2-2'}} UM</span>
-             
-          </div>
-      </th>
-       
-    </tr>
-
- 
-
-                
-                
-            </tbody>
-        </table>
-
+  <section class="py-3 py-md-5">
+    <div class="row">
+      <div class="col-12 text-end">
+        <!-- <button (click)="printinvoice()" class="btn btn-primary mb-3 impr">Imprimer</button> -->
+        
+      </div>
     </div>
-  </div>
-  </div>
-</div>
-</div>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-9 col-xxl-9">
+          <div class="row gy-3 mb-3">
+            <div class="col-6">
+              <h5 class="text-uppercase text-endx m-0">bulletin de paie {{getMonthName(this.date| date:'MM')}} {{this.date| date:'yyyy'}}  </h5>
+            </div>
+            <div class="col-6">
+              <a class="d-block text-end" href="#!">
+                <img src="{{logo}}" class="img-fluid" width="135" height="44">
+              </a>
+            </div>
+            <div class="col-12">
+           
+              <address>
+                <strong>Nom : {{this.infosemp?.enom}}</strong><br>
+                Téléphone : {{this.infosemp?.etel}} <br>
+                Fonction  : {{getfnById(this.infosemp?.efn)}}<br>
+              </address>
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="text-uppercase">Libellé</th>
+                      <th scope="col" class="text-uppercase text-end">Montant</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody class="table-group-divider">
+                    <tr >
+                      <th scope="row">SALAIRE</th>
+                      <td class="text-end">{{ this.bulletin?.sal | number : '1.2-2'}} UM</td>
+                    </tr>
+                    <tr >
+                      <th scope="row">PRIME</th>
+                      <td class="text-end">{{ this.bulletin?.prim | number : '1.2-2'}} UM</td>
+                    </tr>
+                    <tr >
+                      <th scope="row">ABSENCE</th>
+                      <td class="text-end">{{ this.bulletin?.absmont | number : '1.2-2'}} UM</td>
+                    </tr>
+                    <tr >
+                      <th scope="row">AVSS</th>
+                      <td class="text-end">{{ this.bulletin?.sous | number : '1.2-2'}} UM</td>
+                    </tr>
+                    <tr >
+                      <th scope="row">PRÊT</th>
+                      <td class="text-end">{{ this.bulletin?.pret | number : '1.2-2'}} UM</td>
+                    </tr>
+                    <tr >
+                      <th scope="row">CONGÉ</th>
+                      <td class="text-end">{{ this.bulletin?.conger | number : '1.2-2'}} UM</td>
+                    </tr>
+                   
+                    
+                   
+                    <tr>
+                      <th style="color:red" scope="row" >NET À PAYER</th>
+                      <td style="color:red" class="text-end">{{ this.bulletin?.netpayer | number : '1.2-2'}} UM</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </section>
 
 
 </dialog>
@@ -1002,7 +1171,165 @@
       
   </div>
 
+  <ng-template #templateadddoc>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Importer un nouveau document</h4>
+      <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="c1">
+      <form [formGroup]="formdoc" (ngSubmit)="docupload()" >
+        <div class="row">
+          <div class="col" >
+        
+            <input  class="inputrename"  type="text" formControlName="NM" placeholder="Nom ..">
+      </div>  
+        </div>
+        <div class="row">
+          <div class="col" >
+        
+            <input formControlName="FL" type="file"   (change)="onFileChange($event)">
+      </div>  
+        </div>
+        <input  [disabled]="buttondisable==true" type="submit" value="Ajouter">
   
+      </form>
+    </div>
+    </div>
+  </ng-template>
+  
+  <ng-template #templatemoddoc>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Mettre à jour le nom d'un document.</h4>
+      <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="c1">
+      <form [formGroup]="formmoddoc" (ngSubmit)="renamedoc()" >
+        <div class="row">
+          <div class="col" >
+        
+            <input  class="inputrename"  type="text" formControlName="NM" placeholder="Nom ..">
+      </div>  
+        </div>
+        
+        <input [disabled]="buttondisable==true"  type="submit"  value="Renommer">
+  
+      </form>
+    </div>
+    </div>
+  </ng-template>
+  <ng-template #templatepatientez>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Veuillez patienter ...</h4>
+      <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div   class="chargcontainer">
+            <div class="image-container">
+              <img [src]="charg"  >
+            </div>
+          </div> 
+        </div>
+        </ng-template>
+        <dialog id="pointage">
+          <div class="modal-header">
+            <h4 class="modal-title pull-left">Pointage des Employés [{{pointagelist.length}}]</h4>
+            <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#pointage')">
+              <span aria-hidden="true" class="visually-hidden">&times;</span>
+            </button>
+          </div>
+        
+               <!-- !-->
+               <div class="event-schedule-area-two bg-color ">
+              
+                <div class="container">
+                  <div  *ngIf="inchargement" class="chargcontainer">
+                    <div class="image-container">
+                      <img [src]="charg"  >
+                    </div>
+                  </div> 
+                    <!-- row end-->
+                    <div   *ngIf="!inchargement" class="row">
+                        
+                            
+                            <div class="tab-content" id="myTabContent">
+                              <button (click)="tempaddpoint(templateaddPointage)" class="btn btn-primary new"><i class="fa fa-plus"></i> Ajouter une Marque de Présence </button>
+                    <br>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Date</th>
+                                                  
+                                                     <th scope="col">Heure de début</th>  
+                      <th scope="col">Heure de fin</th>
+                   
+                                                    <th  scope="col">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let point of pointagelist | paginate: {id:'pagination4', itemsPerPage: 30, currentPage: pagepointage}">
+                                                    <th scope="row">
+                                                        <div class="event-date">
+                                                            <span>{{point.pdate| date:'dd'}}-{{getMonthName(point.pdate| date:'MM')}}-{{ point.pdate| date:'yyyy' }}</span>
+                                                           
+                                                        </div>
+                                                    </th>
+                                                   
+                                                   
+                                                    <td>
+                                                      <div class="r-no">
+                                                        <span  >
+                                                          {{ point.ptimea | slice: 0:5 }}
+                                                      </span>
+                                                      </div>
+                                                  </td>
+                                                    <td>
+                                                        <div class="r-no">
+                                                          <span >
+                                                            {{ point.ptimed | slice: 0:5 }}
+                                                        </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="primary-btn">
+                                                          <button id="editButton" (click)="tempmodpoint(templatemodPointage,point.pid)" class="btn btn-primary btn-circle btn-circle-sm m-1" title="Modifier"><i class="fa fa-edit"></i></button>
+                                                          <button id="deleteButton" (click)="delpointage(point.pid)" class="btn btn-danger btn-circle btn-circle-sm m-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                        <pagination-controls id="pagination4" (pageChange)=" pagepointage = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>
+
+                                    </div>
+                                </div>
+                       
+                           
+                          
+                        
+                        <!-- /col end-->
+                    </div>
+                    <!-- /row end-->
+                </div>
+            </div>  
+                              
+                           
+                   
+                       
+                      
+                    
+                    <!-- /col end-->
+           
+          </dialog>
 <!-- formseance -->
 
      </body>

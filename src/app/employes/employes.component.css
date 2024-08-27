@@ -3,7 +3,7 @@
 :root {
     --header-height: 3rem;
     --nav-width: 68px;
-    --first-color: #4723D9;
+    --first-color: #0d6efd;
     --first-color-light: #AFA5D9;
     --white-color: #F7F6FB;
     --body-font: "rbt"
@@ -23,7 +23,7 @@
     font-weight: bold; /* ajout de la propriété manquante */
     font-size: 1rem; /* remplacé var(--normal-font-size) par 1rem */
     transition: .5s;
-    background-color: #f8f9fa !important;
+    background-color: white !important;
     
   }
   
@@ -47,7 +47,7 @@
   }
   
   .header_toggle {
-    color: #4723D9; /* remplacé var(--first-color) par #4723D9 */
+    color: #0d6efd; /* remplacé var(--first-color) par #0d6efd */
     font-size: 1.5rem;
     cursor: pointer;
   }
@@ -94,7 +94,7 @@
     left: -30%;
     width: 68px; /* remplacé var(--nav-width) par 68px */
     height: 100vh;
-    background-color: #4723D9; /* remplacé var(--first-color) par #4723D9 */
+    background-color: #0d6efd; /* remplacé var(--first-color) par #0d6efd */
     padding: .5rem 1rem 0 0;
     transition: .5s;
     z-index: 100; /* remplacé var(--z-fixed) par 100 */
@@ -516,6 +516,17 @@
     margin-top: 2%;
     display: block;
     
+    
+  }
+ 
+  .c2{
+    margin-left: auto;
+    margin-right: auto;
+  
+    display: block;
+    width: 70%;
+   
+    
   }
   
   
@@ -656,6 +667,16 @@
     color: black;
   
   }
+  .modal{
+ 
+    margin-top: 30%;
+    width: 500px;
+    height: auto;
+    margin-left:35%;
+    overflow-y:scroll;
+    background-color: white;
+    z-index: 1;
+  }
 
   .in{
 
@@ -709,12 +730,16 @@ background:#0d6efd;
 
 .image{
   width: 12%;
-      background-color: #f8f9fa;
+      background-color: white;
       border: none;
   }
   .excel{
     width: 100%;
-    height:35px;
+    height:25px;
+}
+.excel2{
+    width: 100%;
+    height:45px;
 }
  .nom{
   font-family: "rbt";
@@ -2134,17 +2159,17 @@ a{
 }
 
 input[type=month]{
-    
+    margin-left: 2%;
     padding: 12px 20px;
    margin-top: 3%;
     width: 12%;
-    border: 3px solid #0d6efd;
+    border: 1px solid ;
     border-radius: 4px;
     box-sizing: border-box;
     margin-bottom: 10px;
     font-family: "rbt";
     font-size: 14px;
-    border-radius: 8%;
+    
   }
 .calcul{
     margin-top: 2%;
@@ -2160,3 +2185,61 @@ input[type=month]{
     font-family: "rbt";
     font-size: 30px; 
 }
+
+
+.table-style tr:first-child th{background-color:#F6F6F6; text-align:center; font-size: 15px;}
+.table-style  {
+    font-size: 15px;
+    font-family: "rbt";
+  }
+
+  .jour-actuel {
+    background-color: red;
+    color: white;
+  }
+  
+#details{
+  width: 80%;
+  border-color: #0d6efd;
+  height:100vh;
+  z-index: 2;
+}
+
+
+
+.table2 {
+    display: block;
+    width: 100%;
+    border-collapse: collapse; /* Supprime l'espace entre les cellules */
+  
+    font-size: 16px; /* Taille de la police */
+    text-align: left; /* Alignement du texte à gauche */
+    font-family: "rbt";
+    font-size: bold;
+}
+
+.table2 th, .table2 td {
+    border: 1px solid #ddd; /* Bordure autour des cellules */
+    padding: 24px; /* Espacement intérieur des cellules */
+    font-family: "rbt";
+    color: #333;
+}
+
+.table2 th {
+    background-color: #f2f2f2; /* Couleur de fond des en-têtes */
+    color: #333; /* Couleur du texte des en-têtes */
+    font-weight: bold; /* Met en gras le texte des en-têtes */
+    border: none;
+}
+.table2 td {
+   
+    font-weight: bold; /* Met en gras le texte des en-têtes */
+
+}
+
+.table-style .today {background: #2A3F54; color: #ffffff;}
+.table-style th:nth-of-type(7),td:nth-of-type(7) {color: blue;}
+.table-style th:nth-of-type(6),td:nth-of-type(6) {color: blue;}
+.table-style th:nth-of-type(1),td:nth-of-type(1) {color: red;}
+  
+

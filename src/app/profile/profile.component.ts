@@ -19,6 +19,7 @@ export class ProfileComponent implements OnInit {
   formAddpatient = new FormGroup({
     Nom: new FormControl('', Validators.required ),
     DN: new FormControl('', Validators.required),
+    DA: new FormControl('', Validators.required),
     GNR: new FormControl('', Validators.required ),
     TL: new FormControl('', Validators.required ),
     ADRS: new FormControl('', Validators.required ),
@@ -34,12 +35,23 @@ export class ProfileComponent implements OnInit {
     CHKASSUR: new FormControl('' ),
     ASSRID: new FormControl('' ),
     ASSRTAUX: new FormControl('', Validators.required ),
+    DVALIDE: new FormControl('' ),
+    DPRIS: new FormControl('' ),
 
   });
   formAddseance = new FormGroup({
     DT: new FormControl('', Validators.required ),
     NOTE: new FormControl('' ),
-    SN:new FormControl('', Validators.required )
+    SN:new FormControl('', Validators.required ),
+    SVALIDE: new FormControl('' ),
+
+  });
+
+  formAddcons = new FormGroup({
+    CDATE: new FormControl('', Validators.required ),
+    CDIAG:new FormControl('', Validators.required ),
+    CATCD:new FormControl('', Validators.required ),
+    CHDM: new FormControl('', Validators.required ),
 
   });
   formAddrendez= new FormGroup({
@@ -53,7 +65,8 @@ export class ProfileComponent implements OnInit {
     DT: new FormControl('', Validators.required ),
   MODE: new FormControl('', Validators.required),
    MNT: new FormControl('', Validators.required ),
-   NOTE: new FormControl('' )
+   NOTE: new FormControl('' ),
+   PVALIDE: new FormControl('' )
     
 
   });
@@ -70,7 +83,7 @@ export class ProfileComponent implements OnInit {
    });
   buttondisable=false;
   file:any;
-
+pris=false;
   
   listraitinseance:any = []; 
   
@@ -81,6 +94,7 @@ export class ProfileComponent implements OnInit {
   patst:any;
   Newpatient:any;
   Newevent:any;
+  Newcons:any;
   pagesfile:any=1;
   listfiles:any=[];
   oldfileName:any;
@@ -98,6 +112,7 @@ export class ProfileComponent implements OnInit {
  seancesid:any;
  traits:any=[];
  inchargement:any;
+ inchargementdetails:any;
  dossiers:any;
  assurs:any;
  remise:any=0;
@@ -108,8 +123,16 @@ export class ProfileComponent implements OnInit {
  seancesTraitsData:any=[];
  totaldossiermnt:any=0;
  dossierinfo:any;
+ username:any;
+ role:any;
+ cons:any=[];
+ consid:any;
+ consinfo:any;
+ weekday:any=[];
+ ext:any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) {
 this.patid=this.route.snapshot.paramMap.get('id');
+this.getitem();
     this.patientinfo();
     this.listdossiers();
     this.listrait();
@@ -144,7 +167,14 @@ this.patid=this.route.snapshot.paramMap.get('id');
       tabLink.classList.add('active'); // Ajoutez la classe active à l'élément avec l'ID spécifié
     }
 
-    if(tabId=='documents'){
+    if(tabId=='dossier'){
+      this.listdossiers();
+
+    }
+    else if(tabId=='consultation'){
+    this.listconsultations();
+  }
+  else if(tabId=='documents'){
       this.listdocs();
 
     }
@@ -153,41 +183,29 @@ this.patid=this.route.snapshot.paramMap.get('id');
       
     }
     
-  }else if(origin==false){
-    const tabPanels = document.querySelectorAll('.tab-pane');
-const validTabIds = ['seances', 'paiements'];
-
-// Iterate over each tab panel
-tabPanels.forEach((panel) => {
-    if (validTabIds.includes(panel.id)) {
-        if (panel.id === tabId) {
-            panel.classList.add('show', 'active');
-        } else {
-            panel.classList.remove('show', 'active');
-        }
+  }else if (origin === false) {
+    // Activer directement les onglets "seance" et "dossier"
+    const seancePanel = document.querySelector('#seance');
+    
+    if (seancePanel) {
+      seancePanel.classList.add('show', 'active');
     }
-});
+    const seanceLink = document.querySelector('[data-tab="seance"]');
 
-const links = document.querySelectorAll('.nav-link'); // Sélectionnez tous les liens de navigation
-links.forEach(link => {
-    if (validTabIds.includes(link.id)) {
-        link.classList.remove('active'); // Supprimez la classe active de tous les liens valides
+    if (seanceLink) {
+      seanceLink.classList.add('active');
     }
-});
-
-const tabLink = document.getElementById(tabId); 
-if (tabLink && validTabIds.includes(tabId)) {
-    tabLink.classList.add('active'); 
+   
+  }
 }
-
-    if(tabId=='seances'){
-   this.pages=1;
-    }else if(tabId=='paiements'){
-      this.selectpaiement();
-    }
-    }
+selectseance(){
+  this.pages=1;
+ 
 }
-
+selectpaie(){
+  this.pages=1;
+  this.selectpaiement();
+}
   tempmodifierpatien(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(
       template,
@@ -203,6 +221,8 @@ if (tabLink && validTabIds.includes(tabId)) {
     this.formAddpatient.get('GNR')?.setValue(this.infospat?.pgnr);
     this.formAddpatient.get('TL')?.setValue(this.infospat?.ptel);
     this.formAddpatient.get('ADRS')?.setValue(this.infospat?.padrss);
+    let pdaj =this.datepipe.transform(this.infospat?.pdaj, 'yyyy-MM-dd');
+    this.formAddpatient.get('DA')?.setValue(pdaj);
    
 }
 tempmodifierimg(template: TemplateRef<any>) {
@@ -223,6 +243,7 @@ tempadddossier(template: TemplateRef<any>) {
     
   );
   this.remise=0;
+  this.pris=false;
   this.assurtaux=0;
   this.formAdddossier.reset();
   this.buttondisable=false;
@@ -278,6 +299,30 @@ tempmoddossier(template: TemplateRef<any>,id:any) {
   
   
 }
+
+tempaddcons(template: TemplateRef<any>) {
+  this.modalRef = this.modalService.show(
+    template,
+    Object.assign({}, { class: 'gray modal-lg' })
+    
+  );
+  this.formAddcons.reset();
+  this.buttondisable=false;
+
+}
+
+tempmodcons(template: TemplateRef<any>,id:any) {
+  this.modalRef = this.modalService.show(
+    template,
+    Object.assign({}, { class: 'gray modal-lg' })
+    
+  );
+  this.formAddcons.reset();
+  this.buttondisable=false;
+  this.consid=id;
+  this.getconsinfo(id);
+
+}
 tempaddrendez(template: TemplateRef<any>) {
   this.modalRef = this.modalService.show(
     template,
@@ -300,6 +345,39 @@ tempmodrendez(template: TemplateRef<any>,id:any) {
   this.rendid=id;
   this.getrendvousinfo(id);
 
+}
+initializeCheckboxes(): void {
+  const checkboxes = document.querySelectorAll('.dayweek input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    const id = parseInt(checkbox.getAttribute('value') || '', 10);
+    const isChecked = this.weekday.some((day: { id: number; }) => day.id === id);
+    (checkbox as HTMLInputElement).checked = isChecked;
+  });
+}
+tempaddjoursrendez(template: TemplateRef<any>,id:any) {
+  this.modalRef = this.modalService.show(
+    template,
+    Object.assign({}, { class: 'gray modal-lg' })
+    
+  );
+  this.weekday=[];
+  this.dossieridmod=id;
+  let data= this.dossiers.find((item: { did: number; }) => item.did === id);
+  if (data && data.rendezvous) {
+    // Réinitialiser `weekday` ou le remplir si nécessaire
+    this.weekday = [];
+
+    data.rendezvous.forEach((rv: string) => {
+      const [id, name, heure] = rv.split(',');
+
+      this.weekday.push({
+        id: Number(id),
+        name: name,
+        heure: heure
+      });
+    });
+  }
+  this.initializeCheckboxes();
 }
 onSelectionChange(event: any) {
   
@@ -441,50 +519,29 @@ tempadddoc(template: TemplateRef<any>) {
 
 }
 
-tempmoddoc(template: TemplateRef<any>,name:any) {
+tempmoddoc(template: TemplateRef<any>,name:any,ext:any) {
   this.modalRef = this.modalService.show(
     template,
     Object.assign({}, { class: 'gray modal-lg' })
     
   );
-  
+  this.ext=ext;
   this.buttondisable=false;
   this.formmoddoc.reset();
   this.formmoddoc.get('NM')?.setValue(name);
   this.oldfileName=name;
 }
 tempdetails(id:any) {
+
   this.dossierid=id;
   const myDialog :any= document.querySelector('#details');
   myDialog.showModal();
-  const tabPanels = document.querySelectorAll('.tab-pane');
-const validTabIds = ['seances', 'paiements'];
-const tabId = 'seances'; // Définir le tabId à 'seances'
-
-// Itérer sur chaque panneau
-tabPanels.forEach((panel) => {
-    if (validTabIds.includes(panel.id)) {
-        if (panel.id === tabId) {
-            panel.classList.add('show', 'active');
-        } else {
-            panel.classList.remove('show', 'active');
-        }
-    }
-});
-const links = document.querySelectorAll('.nav-link'); // Sélectionner tous les liens de navigation
-links.forEach(link => {
-    if (validTabIds.includes(link.id)) {
-        link.classList.remove('active'); // Supprimer la classe active de tous les liens valides
-    }
-});
-
-const tabLink = document.getElementById(tabId); 
-if (tabLink && validTabIds.includes(tabId)) {
-    tabLink.classList.add('active'); 
-}
- 
+  this.showTab('seance', false);
+  this.pages=1;
   this.listrait();
   this.listseances();
+
+  
  
 }
 statseance() {
@@ -527,6 +584,12 @@ tempinvoice(idossier:any){
   myDialog.showModal();
   this.dossierinfo= this.dossiers.find((item: { did: number; }) => item.did === idossier)
 }
+
+tempinvoicecons(idcons:any){
+  const myDialog :any= document.querySelector('#invoicecons');
+  myDialog.showModal();
+  this.consinfo= this.cons.find((item: { cid: number; }) => item.cid === idcons)
+}
 closetempinforendez(id:any){
   const modal = document.getElementById(id) as HTMLElement;
   modal.classList.remove('show');
@@ -540,10 +603,12 @@ closetempinforendez(id:any){
             nav = document.getElementById(navId),
             bodypd = document.getElementById(bodyId),
             headerpd = document.getElementById(headerId);
+           const logo :any= document.getElementById('logo');
+         
 
         // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
+        if (toggle && nav && bodypd && headerpd ) {
+          
                 // show navbar
                 nav.classList.toggle('show');
                 // change icon
@@ -552,7 +617,16 @@ closetempinforendez(id:any){
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-            });
+                // toggle logo size
+        if (logo.width === 0) {
+          logo.width = 180;
+          logo.height = 44;
+        } else {
+          logo.width = 0;
+          logo.height = 0;
+        }
+               
+          
         }
     };
 
@@ -585,6 +659,7 @@ modpatient(){
       pnai:this.formAddpatient.get('DN')?.value,
       pgnr:this.formAddpatient.get('GNR')?.value,
       padrss:this.formAddpatient.get('ADRS')?.value,
+      pdaj:this.formAddpatient.get('DA')?.value,
       
     }
   if((this.Newpatient.ptel).toString().length !== 8) { 
@@ -627,6 +702,7 @@ activer(st:any){
   let text = "Êtes-vous certain de passer le patient en mode "+st;
   if (confirm(text) == true) {
     let patst:any;
+    
     if(st=='actif'){
       patst='encours'
     }else{
@@ -636,6 +712,9 @@ activer(st:any){
     .subscribe(
       (data) => {
         this.patientinfo();
+        if(patst='inactive'){
+this.supprimerrendezvous();
+        }
       
         Swal.fire({
    
@@ -662,7 +741,16 @@ activer(st:any){
 supprimerpatient(){
   let text = "Attention, êtes-vous sûr de vouloir supprimer le profil du patient ";
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
+} while (code !== "2811");
     
   this.apiservice.delpatient(this.patid)
     .subscribe(
@@ -691,6 +779,66 @@ supprimerpatient(){
        
       }); 
     }
+    
+  
+}
+
+annuller(){
+  let text = "Attention,Voulez-vous vraiment annuler les rendez-vous du patient ? ";
+  if (confirm(text) == true) {
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
+    const currentDate = new Date();
+    let edate=this.datepipe.transform(currentDate, 'yyyy-MM-dd');
+    this.apiservice.deleteEventsAfterEdate(this.patid,edate)
+      .subscribe(
+        (data) => {
+          this.listrendezvous();
+          Swal.fire({
+   
+            icon: 'success',
+            title: "Les rendez-vous du patient ont été annulés avec succès",
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          //cancelButtonText: 'No, keep it',
+        }).then((result) => {
+          
+         
+        })
+        },
+        error => {
+          
+         
+          alert("réessayer");
+         
+        }); 
+      
+  }
+}
+supprimerrendezvous(){
+
+  const currentDate = new Date();
+  let edate=this.datepipe.transform(currentDate, 'yyyy-MM-dd');
+  this.apiservice.deleteEventsAfterEdate(this.patid,edate)
+    .subscribe(
+      (data) => {
+        
+      },
+      error => {
+        
+       
+    
+       
+      }); 
+    
     
   
 }
@@ -776,6 +924,7 @@ docupload(){
 
   }
 }
+
 adddossier(){
   if(this.formAdddossier.valid){
     let isValid = this.selected.length > 0 && this.selected.every((item: any) => {
@@ -808,8 +957,12 @@ let remisetaux=Number(this.formAdddossier.get('RMS')?.value);
 let remisemontant = total * (remisetaux / 100);
 remisemontant = parseFloat(remisemontant.toFixed(2));
 
-let totalgeneral = total - remisemontant;
-totalgeneral = parseFloat(totalgeneral.toFixed(2));
+
+let totalgeneral =0
+if(this.pris!=true){
+  totalgeneral = total - remisemontant;
+  totalgeneral = parseFloat(totalgeneral.toFixed(2));
+}
 
 let partieclient= (totalgeneral *(1-this.assurtaux));
 partieclient = parseFloat(partieclient.toFixed(2));
@@ -838,7 +991,9 @@ this.Newdossier={
   dassurid: this.formAdddossier.get('ASSRID')?.value,
   dclmnt: partieclient,
   dassurmnt: partieassur,
-  dnote: this.formAdddossier.get('NOTE')?.value
+  dnote: this.formAdddossier.get('NOTE')?.value,
+  dvalide:false,
+  prischrg:this.pris
   
 }
 
@@ -884,6 +1039,8 @@ getdossierinfo(id:any){
  this.formAdddossier.get('ASSRID')?.setValue(data.dassurid);
  this.formAdddossier.get('ASSRTAUX')?.setValue(data.dassurtaux);
  this.formAdddossier.get('RMS')?.setValue(data.dremise);
+ this.formAdddossier.get('DVALIDE')?.setValue(data.dvalide);
+ this.formAdddossier.get('DPRIS')?.setValue(data.prischrg);
  let details :any=data.details;
     let listtraitseances: any = details.map((item: string) => {
       let [id, prix,nbre] = item.split(",").map(Number);
@@ -894,6 +1051,8 @@ getdossierinfo(id:any){
     this.formAdddossier.get('TR')?.setValue(this.selected );
     this.assurtaux=data.dassurtaux/100;
     this.remise=data.dremise/100;
+    let e:any;
+    this.prischange(e);
 }
 moddossier(){
   if(this.formAdddossier.valid){
@@ -927,8 +1086,11 @@ let remisetaux=Number(this.formAdddossier.get('RMS')?.value);
 let remisemontant = total * (remisetaux / 100);
 remisemontant = parseFloat(remisemontant.toFixed(2));
 
-let totalgeneral = total - remisemontant;
-totalgeneral = parseFloat(totalgeneral.toFixed(2));
+let totalgeneral =0
+if(this.pris!=true){
+  totalgeneral = total - remisemontant;
+  totalgeneral = parseFloat(totalgeneral.toFixed(2));
+}
 
 let partieclient= (totalgeneral *(1-this.assurtaux));
 partieclient = parseFloat(partieclient.toFixed(2));
@@ -956,7 +1118,9 @@ this.Newdossier={
   dassurid: this.formAdddossier.get('ASSRID')?.value,
   dclmnt: partieclient,
   dassurmnt: partieassur,
-  dnote: this.formAdddossier.get('NOTE')?.value
+  dnote: this.formAdddossier.get('NOTE')?.value,
+  dvalide: this.formAdddossier.get('DVALIDE')?.value,
+  prischrg:this.pris
   
 }
 
@@ -991,10 +1155,19 @@ this.apiservice.updateDossiers( this.dossieridmod,this.Newdossier)
 }
 
 deldossier(id:any){
-  let text = "Attention, êtes-vous sûr(e) de vouloir supprimer ce dossier  ? ";
-  if (confirm(text) == true) {
+  let text = "Attention, êtes-vous sûr(e) de vouloir supprimer ce dossier ?";
+
+if (confirm(text) == true){
+  
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
-    
+} while (code !== "2811");
   this.apiservice.deleteDossiers(id)
     .subscribe(
       (data) => {
@@ -1017,11 +1190,13 @@ deldossier(id:any){
     
        
       }); 
-    }
+    
+  }
 }
 
 listrendezvous(){
   this.pages=1;
+  this.inchargement=true;
   this.apiservice.getEventsByPID(this.patid).subscribe(
     (data) => {
       
@@ -1032,6 +1207,7 @@ listrendezvous(){
     }else{
       this.events=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -1139,7 +1315,16 @@ modrendez(){
 delrendezvous(id:any){
   let text = "Attention, Voulez-vous vraiment supprimer ce rendez-vous ? ";
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
+} while (code !== "2811");
     
   this.apiservice.deleteEvent(id)
     .subscribe(
@@ -1167,17 +1352,178 @@ delrendezvous(id:any){
     
 }
 
+listconsultations(){
+  this.pages=1;
+  this.inchargement=true;
+  this.apiservice.getconsultationbypid(this.patid).subscribe(
+    (data) => {
+      
+      if(data!=null){
+      this.cons=data;
+      
+     
+    }else{
+      this.cons=[];
+    }
+    this.inchargement=false;
+    },
+    error => {
+      console.error(error);
+    });
+}
+addcons(){
+  if(this.formAddcons.valid){
+    this.buttondisable=true;
+  //Annulé Confirmé
+    this.Newcons={
+      cdate:this.formAddcons.get('CDATE')?.value,
+      cdiag:this.formAddcons.get('CDIAG')?.value,
+      catcd:this.formAddcons.get('CATCD')?.value,
+      chdm:this.formAddcons.get('CHDM')?.value,
+      cpid:this.patid,
+      
+      
+    }
+
+    this.apiservice.addConsultation( this.Newcons)
+    .subscribe(
+      (data) => {
+        this.listconsultations();
+        this.buttondisable=false;
+        this.modalRef.hide();
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'Ajouté avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+          
+        } 
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  }
+}
+
+getconsinfo(id:any){
+  let data=this.cons.find((item: { cid: number; }) => item.cid === id)
+  
+  let cdate=this.datepipe.transform(data.cdate, 'yyyy-MM-dd');
+  this.formAddcons.get('CDATE')?.setValue(cdate);
+  this.formAddcons.get('CDIAG')?.setValue(data.cdiag);
+  this.formAddcons.get('CATCD')?.setValue(data.catcd);
+  this.formAddcons.get('CHDM')?.setValue(data.chdm);
+ 
+
+}
+
+modcons(){
+  if(this.formAddcons.valid){
+    this.buttondisable=true;
+  
+    this.Newcons={
+      cdate:this.formAddcons.get('CDATE')?.value,
+      cdiag:this.formAddcons.get('CDIAG')?.value,
+      catcd:this.formAddcons.get('CATCD')?.value,
+      chdm:this.formAddcons.get('CHDM')?.value,
+      
+      
+      
+    }
+  
+    this.apiservice.updateConsultation(this.consid,this.Newcons)
+    .subscribe(
+      (data) => {
+        this.listconsultations();
+        this.buttondisable=false;
+        this.modalRef.hide();
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'modifiés avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+          
+        } 
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  }
+}
+delcons(id:any){
+  let text = "Attention, voulez-vous vraiment supprimer cette consultation ? ";
+  if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
+    
+  this.apiservice.deleteConsultation(id)
+    .subscribe(
+      (data) => {
+       this.listconsultations();
+        Swal.fire({
+   
+          icon: 'success',
+          title: "La suppression de la consultation du patient a été effectuée avec succès.",
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+        
+       
+      })
+      },
+      error => {
+        
+        alert("réessayer");
+    
+       
+      }); 
+    }
+    
+}
 
 listdocs() {
   this.pagesfile=1;
   // Vérifier si la chaîne contient "null/"
-  
+  this.inchargement=true;
 
   this.apiservice.listdocs(this.patid)
      .subscribe(
        response => { 
-        this.listfiles= response;
         
+        this.listfiles= response;
+        this.inchargement=false;
+       
        },
        error => {
         this.listfiles=[];
@@ -1185,8 +1531,9 @@ listdocs() {
        }
      );
 }
-downloadfile(filename:any){
-  const Path: string = 'assets/profiles/docs/'+this.patid+'/'+filename+'.pdf';
+downloadfile(filename:any,ext:any){
+  const Path: string = 'assets/profiles/docs/'+this.patid+'/'+filename+'.'+ext;
+
   window.open(Path, '_blank');
 
 }
@@ -1194,9 +1541,9 @@ renamedoc(){
   if(this.formmoddoc.valid){
     this.buttondisable=true;
     const directory = this.patid; // Ancien nom du dossier
-    const oldName =this.oldfileName+'.pdf'; // Ancien nom du dossier
+    const oldName =this.oldfileName+'.'+this.ext; // Ancien nom du dossier
     let newName = this.formmoddoc.get('NM')?.value.trim(); // Nouveau nom du dossier
-    newName=newName+'.pdf';
+    newName=newName+'.'+this.ext;
     
     this.apiservice.renamefile(directory,oldName, newName)
       .subscribe(
@@ -1224,11 +1571,20 @@ renamedoc(){
       );}
 }
 
-deletedoc(fileName:any){
+deletedoc(fileName:any,ext:any){
   let text = "Etes-vous certain de vouloir supprimer ce document : "+fileName;
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
-  let fileNamepdf: string = fileName+'.pdf'
+} while (code !== "2811");
+  let fileNamepdf: string = fileName+'.'+ext;
   this.apiservice.deletefile(this.patid,fileNamepdf)
      .subscribe(
        response => {
@@ -1311,6 +1667,7 @@ totalpaiement(){
 }
 listpaiements(){
   this.pages=1;
+  this.inchargementdetails=true;
   this.apiservice.getPaiementbypdos(this.dossierid).subscribe(
     (data) => {
       
@@ -1322,6 +1679,7 @@ listpaiements(){
       this.paiements=[];
       this.totalpaiement();
     }
+    this.inchargementdetails=false;
     },
     error => {
       console.error(error);
@@ -1340,7 +1698,8 @@ addpaie(){
       pnote: this.formAddpaie.get('NOTE')?.value,
       ppid:this.patid,
       pdos:this.dossierid,
-      pdesc:0
+      pdesc:0,
+      pvalide:false
     }
 
     this.apiservice.addPaiement( this.Newpaie)
@@ -1381,6 +1740,7 @@ getpaieinfo(id:any){
  this.formAddpaie.get('MODE')?.setValue(data.pmode);
  this.formAddpaie.get('MNT')?.setValue(data.pmnt);
  this.formAddpaie.get('NOTE')?.setValue(data.pnote);
+ this.formAddpaie.get('PVALIDE')?.setValue(data.pvalide);
   
 }
 modpaie(){
@@ -1393,7 +1753,8 @@ modpaie(){
       pmode:this.formAddpaie.get('MODE')?.value,
       pmnt:this.formAddpaie.get('MNT')?.value,
       pnote: this.formAddpaie.get('NOTE')?.value,
-      pdesc:0
+      pdesc:0,
+      pvalide: this.formAddpaie.get('PVALIDE')?.value,
     }
 
     this.apiservice.updatePaiement(this.paiementid, this.Newpaie)
@@ -1431,7 +1792,16 @@ delpaie(id:any){
   let text = "Attention, Êtes-vous sûr(e) de vouloir supprimer ce paiement  ? ";
   if (confirm(text) == true) {
    
-    
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
   this.apiservice.deletePaiement(id)
     .subscribe(
       (data) => {
@@ -1516,6 +1886,7 @@ getTotalById(id: string): number  {
 
  listseances(){
   this.pages=1;
+  this.inchargementdetails=true;
   this.apiservice.getSeancesbysdos(this.dossierid).subscribe(
     (data) => {
       
@@ -1526,6 +1897,7 @@ getTotalById(id: string): number  {
     }else{
       this.seances=[];
     }
+    this.inchargementdetails=false;
     },
     error => {
       console.error(error);
@@ -1551,7 +1923,8 @@ addseance(){
       snote: this.formAddseance.get('NOTE')?.value,
       spid:this.patid,
       sdos:this.dossierid,
-      details:details
+      details:details,
+      svalide:false
     }
 
     this.apiservice.addSeance( this.Newseance)
@@ -1589,6 +1962,7 @@ getseanceinfo(id:any){
   let sdate=this.datepipe.transform(data.sdate, 'yyyy-MM-dd');
  this.formAddseance.get('DT')?.setValue(sdate);
  this.formAddseance.get('NOTE')?.setValue(data.snote);
+ this.formAddseance.get('SVALIDE')?.setValue(data.svalide);
  let details :any=data.details;
 
     let listtraitseances: any = details.map((item: string) => {
@@ -1622,7 +1996,8 @@ modseance(){
       snote: this.formAddseance.get('NOTE')?.value,
       spid:this.patid,
       sdos:this.dossierid,
-      details:details
+      details:details,
+      svalide:this.formAddseance.get('SVALIDE')?.value,
     }
 
     this.apiservice.updateSeances(this.seancesid, this.Newseance)
@@ -1659,7 +2034,16 @@ modseance(){
 delseance(id:any){
   let text = "Attention, êtes-vous sûr(e) de vouloir supprimer cette séance ? ";
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
+} while (code !== "2811");
     
   this.apiservice.deleteSeances(id)
     .subscribe(
@@ -1717,6 +2101,7 @@ gettraitById(id: any) {
 
  listdossiers(){
   this.pages=1;
+  this.inchargement=true;
   this.apiservice.getDossiersbypid(this.patid).subscribe(
     (data) => {
       
@@ -1727,6 +2112,7 @@ gettraitById(id: any) {
     }else{
       this.dossiers=[];
     }
+    this.inchargement=false;
     },
     error => {
       this.dossiers=[];
@@ -1842,8 +2228,168 @@ hideandopendialog(){
   const myDialog :any= document.querySelector('#details');
   myDialog.showModal();
 }
-printinvoice(){
+printinvoice(buttonId:any){
   //this.closed('#invoice')
+  const impresinvoiceElement :any= document.querySelector('#invoice');
+    const impresconsElement :any= document.querySelector('invoicecons');
   window.print();
+  if(buttonId=='btninvoice'){
+      
+    impresconsElement.classList.add('print-mode');
+    impresinvoiceElement.classList.remove('print-mode');
+    window.print();
+}else if(buttonId=='btncons'){
+  
+  impresinvoiceElement.classList.add('print-mode');
+  impresconsElement.classList.remove('print-mode');
+ 
+  window.print();
+}
+}
+logout(){
+  this.apiservice.deleteToken();
+}
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+
+prischange(e:any){
+  if(this.formAdddossier.get('DPRIS')?.value==true){
+ this.pris=true;
+ this.formAdddossier.get('ASSRID')?.setValue(0);
+ this.formAdddossier.get('ASSRTAUX')?.setValue(0);
+ this.formAdddossier.get('RMS')?.setValue(0);
+ this.assurtaux=0;
+ this.remise=0;
+  }else{
+    this.pris=false;
+  }
+
+
+}
+
+validedossier(id:any){
+  let text = "Confirmez-vous la validation ? ";
+  if (confirm(text) == true) {
+  this.apiservice.updateDvalide(id,true).subscribe(
+    (data) => {
+      this.closed('#invoice');
+      this.listdossiers();
+      Swal.fire({
+   
+        icon: 'success',
+        title: 'Validation effectuée avec succès.',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      //cancelButtonText: 'No, keep it',
+    }).then((result) => {
+  
+      if (result.isConfirmed) {
+        
+      } 
+    })
+   
+    },
+    error => {
+   
+   
+      console.error(error);
+    });
+  }
+}
+
+toggleDay(event: Event, id: number, name: string): void {
+  const checkbox = event.target as HTMLInputElement;
+  if (checkbox.checked) {
+    // Ajoute l'élément à la liste si la case est cochée
+    this.weekday.push({ id, name });
+  } else {
+    // Supprime l'élément de la liste si la case est décochée
+    this.weekday = this.weekday.filter((day: { id: number; }) => day.id !== id);
+  }
+  // Trier la liste par id si elle n'est pas vide
+  if (this.weekday.length > 0) {
+    this.weekday.sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
+  }
+  
+}
+updateTime(event: Event, index: number): void {
+  const input = event.target as HTMLInputElement;
+  this.weekday[index].heure = input.value;
+}
+isValidTime(time: string): boolean {
+  // Expression régulière pour vérifier si l'heure est au format HH:MM
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return timeRegex.test(time);
+}
+addjourrend(){
+  this.buttondisable=true;
+  for (const day of this.weekday) {
+    // Vérifier si id, name ou heure est vide
+    if (!day.id || !day.name || !day.heure|| !this.isValidTime(day.heure)) {
+      alert("S'assurer que les heures du rendez-vous sont bien saisies.");
+      this.buttondisable=false;
+      return ;
+    }
+    
+  }
+  let details: any = this.weekday.map((item: { id: any;name:any; heure: any; }) => `${item.id},${item.name},${item.heure}`); 
+
+  
+this.Newdossier={
+  rendezvous: details, 
+}
+
+this.apiservice.updateDrendez( this.dossieridmod,this.Newdossier)
+.subscribe(
+  (data) => {
+    this.listdossiers();
+    this.createevent();
+    this.buttondisable=false;
+    this.modalRef.hide();
+    Swal.fire({
+
+      icon: 'success',
+      title: 'modifiés avec succès .',
+    showCancelButton: false,
+    confirmButtonText: 'OK',
+    //cancelButtonText: 'No, keep it',
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+      
+    } 
+  })
+  },
+  error => {
+    this.buttondisable=false;
+    alert("réessayer");
+
+   
+  }); 
+
+}
+
+createevent(){
+
+  const currentDate = new Date();
+  let edate=this.datepipe.transform(currentDate, 'yyyy-MM-dd');
+  this.apiservice.createevent(this.dossieridmod,this.patid,edate)
+    .subscribe(
+      (data) => {
+        
+      },
+      error => {
+        
+       
+    
+       
+      }); 
+    
+    
+  
 }
 }

@@ -1,58 +1,58 @@
 <html>
-    
     <body  id="body-pd">
         <header class="header" id="header">
             <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
 			
            <div class="header_user">
-        <div class="header_text">Meden Belkasem</div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+            <div class="header_text">{{this.username}}</div>
+            <div class="header_img"> <img src="assets/profiles/users/img{{this.username}}.png"  onerror="this.src='assets/profiles/defaut.png'" alt=""> </div>
     </div>
         </header>
 
         <div class="l-navbar" id="nav-bar">
             <nav class="nav">
                 <div> 
-                    <a href="#" class="nav_logo"> 
-                        <i class='bx bx-layer nav_logo-icon'></i> 
-                        <span class="nav_logo-name">CKRF</span> 
+                  
+                    <a class="nav_logo"  >
+                      <img id="logo" src="{{logo}}" class="img-fluid" width="0" height="0">
+                      
+                      
                     </a>
                     <div class="nav_list"> 
                        
-                        <a href="#" class="nav_link active"> 
+                        <a routerLink="/patient"  class="nav_link "> 
                             <i class='bx bx-user nav_icon'></i> 
                             <span class="nav_name">Patients</span> 
                         </a> 
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/events"  class="nav_link"> 
                             <i class='bx bx-calendar nav_icon'></i> 
                             <span class="nav_name">Rendez-Vous</span> 
                         </a> 
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/compta"  class="nav_link"> 
                             <i class='bx bx-calculator nav_icon'></i> 
-                            <span class="nav_name">Comptabilité</span> 
+                            <span class="nav_name">Activités</span> 
                         </a> 
                         
-                        <a href="#" class="nav_link"> 
+                        <a routerLink="/stat"  class="nav_link active"> 
                             <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
                             <span class="nav_name">Statistique</span> 
                         </a> 
-                        <a href="#" class="nav_link "> 
+                        <a routerLink="/employes"  class="nav_link "> 
                           <i class='bx bx-grid-alt nav_icon'></i> 
-                          <span class="nav_name">RH</span> 
+                          <span class="nav_name">Employés</span> 
                       </a> 
-                        <a href="#" class="nav_link"> 
+                        <a   *ngIf="this.role=='superadmin'" routerLink="/parametres"  class="nav_link"> 
                           <i class='bx bx-certification nav_icon'></i> 
                           <span class="nav_name">Administration</span> 
                       </a> 
                     </div>
                 </div> 
-                <a href="#" class="nav_link"> 
+                <a (click)="logout()"  class="nav_link"> 
                     <i class='bx bx-log-out nav_icon'></i> 
                     <span class="nav_name">Déconnexion</span> 
                 </a>
             </nav>
         </div>
-
         <div class="height-100 bg-light">
             <div class="btm"><br></div>
             <div class="card">
@@ -65,8 +65,8 @@
         
                     <div class="col-md-2"> <label > État</label> <select   [(ngModel)]="etat"  (ngModelChange)="filtrerEtat($event)"  >
                         <option  value="Tous" >Tous</option>
-                        <option  value="encours" >Encours</option>
-                        <option  value="inactive" >inactif</option>
+                        <option style="color: green;" value="encours" >Encours</option>
+                        <option style="color:red" value="inactive" >inactif</option>
                  
                       </select></div>
                 </div>
@@ -149,7 +149,7 @@
                 <!-- Page content -->
                 <ng-template #templatepatientez>
                     <div class="modal-header">
-                      <h4 class="modal-title pull-left">Modifier Seances</h4>
+                      <h4 class="modal-title pull-left">Veuillez patienter ...</h4>
                       <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
                         <span aria-hidden="true" class="visually-hidden">&times;</span>
                       </button>

@@ -12,6 +12,9 @@ import Swal from 'sweetalert2';
   styleUrls: ['./parametres.component.css']
 })
 export class ParametresComponent implements OnInit {
+  logo= "*/../assets/logo.png";
+  charg= "*/../assets/charg.gif";
+  excel= "*/../assets/excel.png";
   modalRef: any;
   formAddTrait= new FormGroup({
     NMT: new FormControl('', Validators.required ),
@@ -28,6 +31,10 @@ export class ParametresComponent implements OnInit {
     FNM: new FormControl('', Validators.required )
   
   });
+  formAddMode= new FormGroup({
+    MPNM: new FormControl('', Validators.required )
+  
+  });
   buttondisable=false;
   traits:any=[];
   traitid:any;
@@ -38,10 +45,17 @@ export class ParametresComponent implements OnInit {
   foncts:any=[];
   fonctid:any;
   Newfonct:any=[];
-  pages=0;
+  modes:any=[];
+  modeid:any;
+  Newmode:any=[];
+  pages=1;
+  username: any;
+  inchargement:any;
+  role:any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) { }
 
   ngOnInit(): void {
+    this.getitem();
     this.listrait();
   }
 
@@ -102,6 +116,25 @@ export class ParametresComponent implements OnInit {
     this.fonctid=id;
     this.getfnctinfo(id);
   }
+
+  tempaddmode(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+    );
+    this.formAddMode.reset();
+    this.buttondisable=false;
+  }
+  tempmodmode(template: TemplateRef<any>,id:any) {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+    );
+    this.formAddMode.reset();
+    this.buttondisable=false;
+    this.modeid=id;
+    this.getmodeinfo(id);
+  }
   showTab(tabId: string): void {
     // Get all tab panels
     const tabPanels = document.querySelectorAll('.tab-pane');
@@ -134,6 +167,9 @@ export class ParametresComponent implements OnInit {
     else if(tabId=='fonctions'){
       this.listfoncts();
     }
+    else if(tabId=='modes'){
+      this.listmodes();
+    }
   }
   toggleNavbar() {
     const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
@@ -141,10 +177,12 @@ export class ParametresComponent implements OnInit {
             nav = document.getElementById(navId),
             bodypd = document.getElementById(bodyId),
             headerpd = document.getElementById(headerId);
-
+           const logo :any= document.getElementById('logo');
+         
+  
         // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
+        if (toggle && nav && bodypd && headerpd ) {
+          
                 // show navbar
                 nav.classList.toggle('show');
                 // change icon
@@ -153,17 +191,26 @@ export class ParametresComponent implements OnInit {
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-            });
+                // toggle logo size
+        if (logo.width === 0) {
+          logo.width = 180;
+          logo.height = 44;
+        } else {
+          logo.width = 0;
+          logo.height = 0;
+        }
+               
+          
         }
     };
-
+  
     showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-
+  
     
-}
-
+  }
 listrait(){
   this.pages=1;
+  this.inchargement=true;
   this.apiservice.Traitement().subscribe(
     (data) => {
       
@@ -174,6 +221,7 @@ listrait(){
     }else{
       this.traits=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -265,6 +313,7 @@ modtrait(){
 }
 listassurance(){
   this.pages=1;
+  this.inchargement=true;
   this.apiservice.Assurance().subscribe(
     (data) => {
       
@@ -275,6 +324,7 @@ listassurance(){
     }else{
       this.assurs=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -365,6 +415,7 @@ modAssur(){
 }
 listfoncts(){
   this.pages=1;
+  this.inchargement=true;
   this.apiservice.Fonction().subscribe(
     (data) => {
       
@@ -375,6 +426,7 @@ listfoncts(){
     }else{
       this.foncts=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -458,6 +510,119 @@ modfonct(){
       }); 
     }
 }
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+  if(this.role!=='superadmin'){
+  this.router.navigate(['/patient']);
+  }
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
+}
 
+listmodes(){
+  this.pages=1;
+  this.inchargement=true;
+  this.apiservice.Modepaiement().subscribe(
+    (data) => {
+      
+      if(data!=null){
+      this.modes=data;
+      
+     
+    }else{
+      this.modes=[];
+    }
+    this.inchargement=false;
+    },
+    error => {
+      console.error(error);
+    });
+}
+addmode(){
+  if(this.formAddMode.valid){
+    this.buttondisable=true;
+ 
+    this.Newmode={
+      mpnm:this.formAddMode.get('MPNM')?.value,
+    }
+
+    this.apiservice.addModepaiement( this.Newmode)
+    .subscribe(
+      (data) => {
+        this.listmodes();
+        this.buttondisable=false;
+        this.modalRef.hide();
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'Ajouté avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+          
+        } 
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  }
+}
+getmodeinfo(id:any){
+  let data=this.modes.find((item: { mpid: number; }) => item.mpid === id)
+    
+  this.formAddMode.get('MPNM')?.setValue(data.mpnm);
+}
+modmode(){
+  if(this.formAddMode.valid){
+    this.buttondisable=true;
+ 
+    this.Newmode={
+      mpnm:this.formAddMode.get('MPNM')?.value,
+    }
+
+
+    this.apiservice.updateModepaiement(this.modeid,this.Newmode)
+    .subscribe(
+      (data) => {
+        this.listmodes();
+        this.buttondisable=false;
+        this.modalRef.hide();
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'modifiés avec succès .',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+          
+        } 
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  } 
+}
 
 }

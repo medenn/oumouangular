@@ -17,6 +17,7 @@ export class EmployesComponent implements OnInit {
   excel= "*/../assets/excel.png";
   sshow= "*/../assets/show.png";
   hide= "*/../assets/hidden.png";
+  logo= "*/../assets/logo.png";
     modalRef: any;
     buttondisable=false;
     formAddemployes = new FormGroup({
@@ -29,6 +30,8 @@ export class EmployesComponent implements OnInit {
          
       });
       inchargement:any=true;
+      inchargementpoint:any=true;
+      jourpoint:any;
       listemployes:any=[];
       listemployesFiltree:any=[];
       stemp:any='encours';
@@ -44,12 +47,23 @@ export class EmployesComponent implements OnInit {
       date:any=new Date();
     
       bulltins:any;
+      role:any;
+      joursFrancais = ["L", "M", "M", "J", "V", "S", "D"];
+      joursDuMois: number[] = [];
+  semaines: any[] = [];
+  moisAnnee: string = '';
+  dateActuelle :any;
+  pagepointage:any=1;
+  pointagelist:any=[];
+  note:any;
 
  monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
  month :any;
  year :any;
+  username: any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) {
     this.date=this.datepipe.transform(  this.date, 'yyyy-MM');
+    this.getitem();
     this.listfoncts();
     this.getlistemployes();
     this.randomNumber = Math.floor(Math.random() * 100) + 1;
@@ -65,31 +79,96 @@ tempaddemp(template: TemplateRef<any>) {
     this.formAddemployes.reset();
     this.buttondisable=false;
 }
-  toggleNavbar() {
-    const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
-        const toggle = document.getElementById(toggleId),
-            nav = document.getElementById(navId),
-            bodypd = document.getElementById(bodyId),
-            headerpd = document.getElementById(headerId);
 
-        // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
-                // show navbar
-                nav.classList.toggle('show');
-                // change icon
-                toggle.classList.toggle('bx-x');
-                // add padding to body
-                bodypd.classList.toggle('body-pd');
-                // add padding to header
-                headerpd.classList.toggle('body-pd');
-            });
-        }
-    };
+tempinforendez(enote:any){
+  const modal = document.getElementById('form') as HTMLElement;
+    // Ajouter la classe 'show' au modal pour l'afficher
+    modal.classList.add('show');
+    // Ajouter les attributs nécessaires pour rendre le modal visible
+    modal.style.display = 'block';
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('role', 'dialog');
+    this.note=enote;
+}
+closetempnote(id:any){
+  const modal = document.getElementById(id) as HTMLElement;
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+  modal.removeAttribute('aria-modal');
+  modal.removeAttribute('role');
+}
+closetempinforendez(){
+  const modal = document.getElementById('form') as HTMLElement;
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+  modal.removeAttribute('aria-modal');
+  modal.removeAttribute('role');
+}
+tempdetailpointage(jour:any) {
 
-    showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
+  const myDialog :any= document.querySelector('#details');
+  myDialog.showModal();
+ this.pagepointage=1;
 
+  this.jourpoint=jour;
+  const mois = this.dateActuelle.getMonth()+1; // Mois actuel (0-11)
+  const annee = this.dateActuelle.getFullYear(); // Année actuelle
+  
+ let date=annee+'-'+mois+'-'+jour;
+ this.listpointage(date);
+}
+
+closed(id:any){
+  const myDialog :any= document.querySelector(id);
+  myDialog.close(); 
+  
+}
+temppoint(template: TemplateRef<any>) {
+  this.modalRef = this.modalService.show(
+    template,
+    Object.assign({}, { class: 'gray modal-lg' })
     
+  );
+  this.dateActuelle = new Date();
+  this.genererCalendrier( );
+  
+}
+toggleNavbar() {
+  const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
+      const toggle = document.getElementById(toggleId),
+          nav = document.getElementById(navId),
+          bodypd = document.getElementById(bodyId),
+          headerpd = document.getElementById(headerId);
+         const logo :any= document.getElementById('logo');
+       
+
+      // Validate that all variables exist
+      if (toggle && nav && bodypd && headerpd ) {
+        
+              // show navbar
+              nav.classList.toggle('show');
+              // change icon
+              toggle.classList.toggle('bx-x');
+              // add padding to body
+              bodypd.classList.toggle('body-pd');
+              // add padding to header
+              headerpd.classList.toggle('body-pd');
+              // toggle logo size
+      if (logo.width === 0) {
+        logo.width = 180;
+        logo.height = 44;
+      } else {
+        logo.width = 0;
+        logo.height = 0;
+      }
+             
+        
+      }
+  };
+
+  showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
+
+  
 }
 
 exporttoexcel(){
@@ -315,10 +394,11 @@ async calculbulletin() {
         const empid = emp.eid;
         const index =  this.listemployesFiltree.indexOf(emp);
         const sal = emp.esal ;
+        const edaj=emp.edent;
 
        
         await this.apiservice.delbulletin(empid, annee, mois).toPromise();
-        await this.calculsal(empid, annee, mois, sal,  index,  this.listemployesFiltree.length);
+        await this.calculsal(empid, annee, mois, sal,edaj,  index,  this.listemployesFiltree.length);
       } catch (error) {
         console.error(error);
       }
@@ -328,25 +408,34 @@ async calculbulletin() {
   }
 }
 
-async calculsal(empid :any,annee:any,mois:any,contrats:any,i:any,length:any) {
+async calculsal(empid :any,annee:any,mois:any,sal:any,daj:any,i:any,length:any) {
   try {
   
-    await this.getSalaryInfo(empid, annee, mois,contrats);
+    await this.getSalaryInfo(empid, annee, mois,sal,daj);
     await this.addBulletin(i,length);
   } catch (error) {
     console.error(error);
   }
 }
 
-
-
-async getSalaryInfo(empid: any, annee: any, mois: any,empsalaire:any) {
+async getSalaryInfo(empid: any, annee: any, mois: any,empsalaire:any,daj:any) {
   try {
-    
+    let datent = this.datepipe.transform(  daj, 'MM-yyyy');
+  
     let dat = new Date(mois+'/01/'+annee);
+    let datesal  = this.datepipe.transform(  dat, 'MM-yyyy');
     dat.setMonth( dat.getMonth()+1)
    let annee2 = this.datepipe.transform(  dat, 'yyyy');
   let mois2 = this.datepipe.transform(  dat, 'MM');
+  let nbrjrretard:any;
+  if(  datent===datesal){
+   nbrjrretard = this.datepipe.transform(  daj, 'dd');
+    nbrjrretard=nbrjrretard-1;
+  
+  }else{
+    nbrjrretard=0;
+  }
+  
 
     const data = await this.apiservice.salaireinfo(empid, annee, mois,annee2,mois2).toPromise();
     
@@ -357,10 +446,12 @@ async getSalaryInfo(empid: any, annee: any, mois: any,empsalaire:any) {
     }else{ 
       //calcul salaire 
      
-      this.salaire.abtaux= 30-data.ab;
+      this.salaire.abtaux= 30-data.ab-nbrjrretard;
+      
       this.salaire.salaire= (empsalaire*this.salaire.abtaux)/30; // salaire ce mois ci
-      this.salaire.absmontant= (empsalaire*data.ab)/30; // absence montant
-     
+      
+      this.salaire.absmontant= (empsalaire*(data.ab+nbrjrretard))/30; // absence montant
+    
 
 //verifier conger ou non
  if(data.checkabscong==false){
@@ -427,7 +518,7 @@ async calculmoiscong(empid:any,annee:any,mois:any,data:any,daycong:any,empsalair
     bide:empid,
     bannee : annee,
     bmois : mois,
-  sal:this.salaire.sal ,
+  sal:this.salaire.salaire,
   conger:0,
   pret:this.salaire.pret,
   sous:0,
@@ -535,4 +626,87 @@ calculateFilteredTotal() {
 
   return this.listemployesFiltree.reduce((acc: any, curr: { tt: any; }) => acc + (curr.tt || 0), 0);
 }
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
+}
+
+moisPrecedent() {
+  this.dateActuelle.setMonth(this.dateActuelle.getMonth() - 1);
+  this.genererCalendrier();
+}
+
+moisSuivant() {
+  this.dateActuelle.setMonth(this.dateActuelle.getMonth() + 1);
+  this.genererCalendrier();
+}
+genererCalendrier( ) {
+  this.joursDuMois = [];
+  this.semaines = [];
+  this.moisAnnee= '';
+  const mois = this.dateActuelle.getMonth(); // Mois actuel (0-11)
+  const annee = this.dateActuelle.getFullYear(); // Année actuelle
+  this.moisAnnee = `${this.obtenirNomMois(mois)} - ${annee}`;
+
+  const premierJour = new Date(annee, mois, 1).getDay(); // Premier jour du mois (0-6)
+  const nbreJours = new Date(annee, mois + 1, 0).getDate(); // Nombre de jours dans le mois
+
+  let jourSemaine = (premierJour + 6) % 7; // Pour démarrer la semaine avec lundi
+
+  // Remplir les jours du mois
+  for (let i = 0; i < jourSemaine; i++) {
+    this.joursDuMois.push(0); // Ajouter des zéros pour les jours vides avant le premier jour du mois
+  }
+  for (let jour = 1; jour <= nbreJours; jour++) {
+    this.joursDuMois.push(jour);
+  }
+
+  // Remplir les jours suivants avec des zéros pour compléter la semaine
+  while (this.joursDuMois.length % 7 !== 0) {
+    this.joursDuMois.push(0);
+  }
+
+  // Diviser les jours en semaines
+  for (let i = 0; i < this.joursDuMois.length; i += 7) {
+    this.semaines.push(this.joursDuMois.slice(i, i + 7));
+  }
+}
+
+obtenirNomMois(mois: number): string {
+  const moisFrancais = [
+      "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+      "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+  ];
+  return moisFrancais[mois];
+}
+estJourActuel(jour: number): boolean {
+  const aujourdHui = new Date();
+  return jour === aujourdHui.getDate() &&
+         this.dateActuelle.getMonth() === aujourdHui.getMonth() &&
+         this.dateActuelle.getFullYear() === aujourdHui.getFullYear();
+}
+
+listpointage(date:any){
+  this.inchargementpoint=true;
+  this.apiservice.pointagebydate(date).subscribe(
+    (data) => {
+      this.inchargementpoint=false;
+      if(data!=null){
+      this.pointagelist=data;
+      
+     
+    }else{
+      this.pointagelist=[];
+    }
+    },
+    error => {
+      console.error(error);
+    });
+}
+
 }

@@ -1,67 +1,68 @@
 <html>
     
-    <body  id="body-pd">
-        <header class="header" id="header">
-            <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
-			
-           <div class="header_user">
-        <div class="header_text">Meden Belkasem</div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
-    </div>
-        </header>
+<body  id="body-pd">
+  <header class="header" id="header">
+      <div class="header_toggle"> <i class='bx bx-menu' (click)="toggleNavbar()" id="header-toggle"></i> </div>
 
-        <div class="l-navbar" id="nav-bar">
-            <nav class="nav">
-                <div> 
-                    <a href="#" class="nav_logo"> 
-                        <i class='bx bx-layer nav_logo-icon'></i> 
-                        <span class="nav_logo-name">CKRF</span> 
-                    </a>
-                    <div class="nav_list"> 
-                       
-                        <a href="#" class="nav_link active"> 
-                            <i class='bx bx-user nav_icon'></i> 
-                            <span class="nav_name">Patients</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calendar nav_icon'></i> 
-                            <span class="nav_name">Rendez-Vous</span> 
-                        </a> 
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-calculator nav_icon'></i> 
-                            <span class="nav_name">Comptabilité</span> 
-                        </a> 
-                        
-                        <a href="#" class="nav_link"> 
-                            <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
-                            <span class="nav_name">Statistique</span> 
-                        </a> 
-                        <a href="#" class="nav_link "> 
-                          <i class='bx bx-grid-alt nav_icon'></i> 
-                          <span class="nav_name">RH</span> 
-                      </a> 
-                        <a href="#" class="nav_link"> 
-                          <i class='bx bx-certification nav_icon'></i> 
-                          <span class="nav_name">Administration</span> 
-                      </a> 
-                    </div>
-                </div> 
-                <a href="#" class="nav_link"> 
-                    <i class='bx bx-log-out nav_icon'></i> 
-                    <span class="nav_name">Déconnexion</span> 
-                </a>
-            </nav>
-        </div>
+     <div class="header_user">
+      <div class="header_text">{{this.username}}</div>
+      <div class="header_img"> <img src="assets/profiles/users/img{{this.username}}.png"  onerror="this.src='assets/profiles/defaut.png'" alt=""> </div>
+</div>
+  </header>
 
+  <div class="l-navbar" id="nav-bar">
+      <nav class="nav">
+          <div> 
+            
+              <a class="nav_logo"  >
+                <img id="logo" src="{{logo}}" class="img-fluid" width="0" height="0">
+                
+                
+              </a>
+              <div class="nav_list"> 
+                 
+                  <a routerLink="/patient"  class="nav_link "> 
+                      <i class='bx bx-user nav_icon'></i> 
+                      <span class="nav_name">Patients</span> 
+                  </a> 
+                  <a routerLink="/events"  class="nav_link"> 
+                      <i class='bx bx-calendar nav_icon'></i> 
+                      <span class="nav_name">Rendez-Vous</span> 
+                  </a> 
+                  <a routerLink="/compta"  class="nav_link"> 
+                      <i class='bx bx-calculator nav_icon'></i> 
+                      <span class="nav_name">Activités</span> 
+                  </a> 
+                  
+                  <a routerLink="/stat"  class="nav_link"> 
+                      <i class='bx bx-bar-chart-alt-2 nav_icon'></i> 
+                      <span class="nav_name">Statistique</span> 
+                  </a> 
+                  <a routerLink="/employes"  class="nav_link active"> 
+                    <i class='bx bx-grid-alt nav_icon'></i> 
+                    <span class="nav_name">Employés</span> 
+                </a> 
+                  <a *ngIf="this.role=='superadmin'" routerLink="/parametres"  class="nav_link"> 
+                    <i class='bx bx-certification nav_icon'></i> 
+                    <span class="nav_name">Administration</span> 
+                </a> 
+              </div>
+          </div> 
+          <a (click)="logout()"  class="nav_link"> 
+              <i class='bx bx-log-out nav_icon'></i> 
+              <span class="nav_name">Déconnexion</span> 
+          </a>
+      </nav>
+  </div>
                <!--Container Main start-->
-               <div class="height-100 bg-light">
+               <div class="height-100 ">
 		
 		
                 <div class="row d-flex justify-content-center mt-5 ">
         
                     <div class="col-md-8">
                         
-        
+        <br>
                         <div class="card1">
         
                           <div class="d-flex justify-content-between align-items-center">
@@ -71,8 +72,8 @@
                               <div class="d-flex flex-row">
                                
                             
-                                <button  type="button"  *ngIf="!show" (click)="showhiden()"  class="image"><img class="excel"   [src]="sshow"  > </button>
-                                <button  type="button" *ngIf="show"  (click)="showhiden()"  class="image"><img class="excel"   [src]="hide"  > </button>
+                                <button  type="button"  *ngIf="!show" (click)="showhiden()"  class="image"><img class="excel2"   [src]="sshow"  > </button>
+                                <button  type="button" *ngIf="show"  (click)="showhiden()"  class="image"><img class="excel2"   [src]="hide"  > </button>
                                 <button  type="button"    (click)="exporttoexcel()"  class="image"><img class="excel"   [src]="excel"  > </button>
                                <button *ngIf="stemp=='encours'"  (click)="stchanged('inactive')"class="btn btn-primary in w-20 "><span class="active">Actifs</span></button>
                                <button   *ngIf="stemp!='encours'"  (click)="stchanged('encours')"class="btn btn-primary out w-20 "><span class="active">Tous</span></button>
@@ -101,7 +102,10 @@
                 
                   <div class="d-flex flex-row align-items-center">   
                      <input [(ngModel)]="date"  (ngModelChange)="getinfobydate($event)" class="Date"  type="month" min="2023-04"    >
+                    
+                     <button  (click)="temppoint(templatepointage)" class="btn btn-secondary calcul">Registre de Pointage  </button>
                      <button *ngIf="show" (click)="calculbulletin()" class="btn btn-danger calcul">Calculer Salaires  </button>
+
                     </div>
                    
 
@@ -114,7 +118,7 @@
                       <div class="col">
                         <div class="card shadow">
                           <div class="card-header border-0">
-                            <h3 *ngIf="!show" class="mb-0">LISTE PERSONNEL</h3>
+                            <h3 *ngIf="!show" class="mb-0">LISTE DU PERSONNEL [{{listemployesFiltree.length}}]</h3>
                             <h3 *ngIf="show" class="mb-0"> ETAT DE SALAIRE MOIS {{month}} {{year}}</h3>
                            
                           </div>
@@ -127,6 +131,7 @@
                             <table class="table align-items-center table-flush">
                               <thead class="thead-light">
                                 <tr class="entete">
+                                  <th >Nº </th> 
                                   <th scope="col">Nom /Prénom</th>
                                   <th  *ngIf="!show" scope="col">Telephone </th>
                                   <th   *ngIf="!show" scope="col">Fonction </th>
@@ -138,17 +143,21 @@
                                   <th  *ngIf="show" scope="col">Prêt</th>
                                   <th  *ngIf="show" scope="col">Congé</th>
                                   <th  *ngIf="show" scope="col">Net à Payer</th>
-                                  <th   class="text-center"  scope="col">Actions</th>
+                                 
                                   
                                  
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr *ngFor="let emp of listemployesFiltree">
-                                  
+                                <tr *ngFor="let emp of listemployesFiltree; let i = index">
+                                  <td>    
+                                    <span class="badge badge-dot mr-4">
+                                      {{ i + 1 }}
+                                    </span>  
+                                  </td>
                                   <th scope="row">
                                     <div class="media align-items-center">
-                                      <a href="#" class="avatar rounded-circle mr-3">
+                                      <a (click)="profilepage(emp.eid)"  class="avatar rounded-circle mr-3">
                                         <img alt="Image placeholder"src="assets/profiles/emps/img{{emp.eid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                       </a>
                                       <div class="media-body">
@@ -172,7 +181,12 @@
                                       {{emp.edent | date:'dd-MM-yyyy'}}
                                     </span>  
                                   </td>
-                                  <td >    
+                                  <td  *ngIf="!show">    
+                                    <span class="badge badge-dot mr-4">
+                                      {{emp.esal | number : '1.2-2' }} 
+                                    </span>  
+                                  </td>
+                                  <td  *ngIf="show">    
                                     <span class="badge badge-dot mr-4">
                                       {{emp.sal | number : '1.2-2' }} 
                                     </span>  
@@ -210,10 +224,7 @@
                                   </td>
                                   
                                  
-                                  <td  >
-                                    <a (click)="profilepage(emp.eid)" class="candidate-list-favourite order-2 text-danger" ><i class="fa fa-external-link-square info"></i></a>
-                                    <span class="candidate-list-time order-1"> </span>
-                                </td>
+                                 
                                 </tr>
                         
                                 <tr *ngIf="show">
@@ -226,7 +237,7 @@
                                   <td></td>
                               
                                   <td ></td>
-                                 
+                                  <td ></td>
                                   <td   class="tt"> {{calculateFilteredTotal() | number : '1.2-2'}}</td>
                                 
                                
@@ -311,6 +322,160 @@
               </div>
               </div>
               </ng-template>    
+              <ng-template #templatepointage>
+                <div class="modal-header">
+                  <h4 class="modal-title pull-left">Pointage des Employés</h4>
+                  <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+                    <span aria-hidden="true" class="visually-hidden">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="c2">
+                    <div class=" pull-right-lg" style="border:0px solid">
+                     
+                
+                     
+                      <table class="table2 table-bordered  table-style table-responsive">
+                        <tr>
+                          <th colspan="2">
+                            <a  (click)="moisPrecedent()">
+                              <span class="fa fa-arrow-left"></span>
+                            </a>
+                          </th>
+                          <th colspan="3">{{ moisAnnee }}</th>
+                          <th colspan="2">
+                            <a  (click)="moisSuivant()">
+                              <span class="fa fa-arrow-right"></span>
+                            </a>
+                          </th>
+                        </tr>
+                        <tr>
+                          <th *ngFor="let jour of joursFrancais">{{ jour }}</th>
+                        </tr>
+                        <tr *ngFor="let semaine of semaines">
+                          <td  (click)="tempdetailpointage(jour)" *ngFor="let jour of semaine" [ngClass]="{'jour-actuel': estJourActuel(jour)}">
+                            <span  *ngIf="jour !== 0">{{ jour }}</span>
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      </div>
+                    </div>
+                  </div>
+                  
+                  </ng-template>
+
+                  <dialog id="details">
+                    <div class="modal-header">
+                      <h4 class="modal-title pull-left">Pointage des Employés [{{pointagelist.length}}]</h4>
+                      <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="closed('#details')">
+                        <span aria-hidden="true" class="visually-hidden">&times;</span>
+                      </button>
+                    </div>
+                  
+                         <!-- !-->
+                <div class="main-content">
+                
+                  <!-- Table -->
+            <div class="row">
+            
+                    <div class="col">
+                      <div class="card shadow">
+                        <div class="card-header border-0">
+                          <h3  class="mb-0">{{jourpoint}}-{{ moisAnnee }}</h3>
+                        
+                         
+                        </div>
+                        <div  *ngIf="inchargementpoint" class="chargcontainer">
+                          <div class="image-container">
+                            <img [src]="charg"  >
+                          </div>
+                        </div> 
+                        <div *ngIf="!inchargementpoint" class="table-responsive">
+                          <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                              <tr class="entete">
+                               
+                                <th  scope="col">Nom /Prénom </th>
+                                <th scope="col">Heure de début</th>  
+                                <th  scope="col">Heure de fin</th>
+                                <!-- <th  scope="col">Note</th> -->
+                               
+                                
+                               
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr  *ngFor="let point of pointagelist | paginate: {id:'pagination3', itemsPerPage: 30, currentPage: pagepointage}">
+                             
+                                <th scope="row">
+                                  <div class="media align-items-center">
+                                    <a (click)="profilepage(point.eid)"  class="avatar rounded-circle mr-3">
+                                      <img alt="Image placeholder"src="assets/profiles/emps/img{{point.eid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                    </a>
+                                    <div class="media-body">
+                                      <span class="mb-0 text-sm"  >{{point.enom}}</span>
+                                     
+                                    </div>
+                                  </div>
+                                </th>    
+                                <td  >    
+                                  <span class="badge badge-dot mr-4">
+                                    {{ point.ptimea | slice: 0:5 }} 
+                                  </span>  
+                                </td>
+                            
+                                <td  >    
+                                  <span class="badge badge-dot mr-4">
+                                    {{ point.ptimed | slice: 0:5 }} 
+                                  </span>  
+                                </td>
+                            
+                                <!-- <td>
+                                  <div class="primary-btn">
+                                    <button (click)="tempinforendez(point.pnote)" id="deleteButton"class="btn btn-info btn-circle btn-circle-sm m-1" title="Info"><i class="fa fa-info"></i></button>                              
+
+                                  </div>
+                              </td> -->
+                               
+                               
+                              </tr>
+                      
+                             
+                            </tbody>
+                          </table>
+                          <pagination-controls id="pagination3" (pageChange)=" pagepointage = $event" previousLabel="" nextLabel="" class="page"></pagination-controls>            
+                        </div>
+                        
+                      </div>
+                      
+                    </div>
+                  </div>
+                
+                </div>        
+                   
+                                        
+                                     
+                             
+                                 
+                                
+                              
+                              <!-- /col end-->
+                     
+                    </dialog>
+                    <div class="modal fade" id="form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+                      <div class="modal-content  px-md-4 p-sm-3 p-4">
+                      
+                     
+                        <a  (click)="closetempnote('form')"> <i class="fa fa-close"></i></a>
+                        <p class="r3 px-md-5 px-sm-1">{{ note ? note : 'aucune note' }}</p>
+                         
+                          
+                          
+                      </div>
+                  
+              </div>
      </body>
 
 

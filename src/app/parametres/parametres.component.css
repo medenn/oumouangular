@@ -2,7 +2,7 @@
 :root {
     --header-height: 3rem;
     --nav-width: 68px;
-    --first-color: #4723D9;
+    --first-color: #0d6efd;
     --first-color-light: #AFA5D9;
     --white-color: #F7F6FB;
     --body-font: "rbt"
@@ -22,7 +22,7 @@
     font-weight: bold; /* ajout de la propriété manquante */
     font-size: 1rem; /* remplacé var(--normal-font-size) par 1rem */
     transition: .5s;
-    background-color: #f8f9fa !important;
+    background-color: white !important;
   }
   
   a {
@@ -45,7 +45,7 @@
   }
   
   .header_toggle {
-    color: #4723D9; /* remplacé var(--first-color) par #4723D9 */
+    color: #0d6efd; /* remplacé var(--first-color) par #0d6efd */
     font-size: 1.5rem;
     cursor: pointer;
   }
@@ -92,7 +92,7 @@
     left: -30%;
     width: 68px; /* remplacé var(--nav-width) par 68px */
     height: 100vh;
-    background-color: #4723D9; /* remplacé var(--first-color) par #4723D9 */
+    background-color: #0d6efd; /* remplacé var(--first-color) par #0d6efd */
     padding: .5rem 1rem 0 0;
     transition: .5s;
     z-index: 100; /* remplacé var(--z-fixed) par 100 */
@@ -159,6 +159,11 @@
   
   .show {
     left: 0;
+  }
+
+  .imglogo{
+    width: 12px;
+    height: 14px;
   }
   
   .body-pd {
@@ -454,7 +459,7 @@
     font-size: 18px;
 }
 .event-schedule-area-two .tab-content .table thead tr th {
-    padding: 20px;
+    /* padding: 20px; */
     border: 0;
 }
 .event-schedule-area-two .tab-content .table tbody {
@@ -721,4 +726,18 @@
   }
   .page ::ng-deep .ngx-pagination .current {
     background:#0d6efd;
+  }
+
+  .image-container img {
+    width: 100%;
+    height:150px;
+  }
+
+  .chargcontainer{
+  
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+
   }

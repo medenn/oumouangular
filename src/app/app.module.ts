@@ -18,7 +18,12 @@ import { DatePipe } from '@angular/common';
 import { EmployesComponent } from './employes/employes.component';
 import { EmpComponent } from './emp/emp.component';
 import { StatComponent } from './stat/stat.component';
-import { LoginComponent } from './login/login.component'
+import { LoginComponent } from './login/login.component';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 
 @NgModule({
@@ -42,6 +47,10 @@ import { LoginComponent } from './login/login.component'
     NgSelectModule,
     HttpClientModule,
     NgxPaginationModule,
+    AutocompleteLibModule,
+    TabsModule.forRoot(),
+    TypeaheadModule.forRoot(),
+    BrowserAnimationsModule,
     ModalModule.forRoot() // Add this line to your imports
   ],
   providers: [DatePipe],

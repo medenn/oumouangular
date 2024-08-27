@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ApiserviceService } from '../apiservice.service';
@@ -13,10 +13,12 @@ import Swal from 'sweetalert2';
 })
 export class EmpComponent implements OnInit {
   charg= "*/../assets/charg.gif";
+  logo= "*/../assets/logo.png";
   modalRef: any;
   formAddemployes = new FormGroup({
     Nom: new FormControl('', Validators.required ),
     DENT: new FormControl('', Validators.required),
+    EDF: new FormControl(''),
    FN: new FormControl('', Validators.required ),
     TL: new FormControl('', Validators.required ),
    SAL: new FormControl('', Validators.required ),
@@ -49,6 +51,21 @@ export class EmpComponent implements OnInit {
     ECHECK:new FormControl(''),
     CRCHECK:new FormControl(''),
    });
+   formPoint = new FormGroup({
+    PDATE: new FormControl('', Validators.required ),
+    PTIMEA: new FormControl('', Validators.required ),
+    PTIMED: new FormControl(''),
+    PNOTE: new FormControl(''),
+    
+   });
+   formdoc = new FormGroup({
+    NM: new FormControl('', Validators.required ),  
+    FL: new FormControl('', Validators.required ),  
+   });
+
+   formmoddoc = new FormGroup({
+    NM: new FormControl('', Validators.required ),  
+   });
    buttondisable=false;
    file:any;
    infosemp:any;
@@ -74,9 +91,25 @@ export class EmpComponent implements OnInit {
    pagesavss=1;
    bulletin:any;
    inchargementbull:any;
+  username: any;
+  inchargement:any;
+ salaire:any=[];
+ salaireinfos:any=[];
+ role:any;
+ oldfileName:any;
+ pagesfile:any=1;
+ listfiles:any=[];
+ ext:any;
+ pointagelist:any=[];
+ inchargementpoint=true;
+ pagepointage:any=1;
+ Newpoint:any=[];
+ pointid:any;
+
+ @ViewChild('templatepatientez') templatepatientez: any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) { 
     this.empid=this.route.snapshot.paramMap.get('id');
-  
+  this.getitem();
     this.empinfo();
     this.listfoncts();
     this.listAbsence();
@@ -84,6 +117,82 @@ export class EmpComponent implements OnInit {
 
   ngOnInit(): void {
   }
+  tempdetailpointage() {
+
+    const myDialog :any= document.querySelector('#pointage');
+    myDialog.showModal();
+   this.pagepointage=1;
+   
+   this.listpointage();
+  }
+  tempaddpoint(template: TemplateRef<any>) {
+    this.closed('#pointage')
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+      
+    );
+
+    this.buttondisable=false;
+    this.formPoint.reset();
+    const dateActuelle = new Date();
+    let convrtdate =this.datepipe.transform(dateActuelle, 'yyyy-MM-dd');
+    this.formPoint.get('PDATE')?.setValue(convrtdate);
+
+  }
+  tempmodpoint(template: TemplateRef<any>,id:any) {
+    this.closed('#pointage')
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+      
+    );
+   
+    this.buttondisable=false;
+    this.formPoint.reset();
+    this.pointid=id;
+    
+
+    this.getpointageinfo(id);
+  
+  }
+  closepoint(){
+    this.modalRef?.hide();
+    const myDialog :any= document.querySelector('#pointage');
+    myDialog.showModal();
+  }
+  tempadddoc(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+      
+    );
+    this.file=null;
+    this.buttondisable=false;
+    this.formdoc.reset();
+  
+  }
+  
+  tempmoddoc(template: TemplateRef<any>,name:any,ext:any) {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+      
+    );
+    this.ext=ext;
+    this.buttondisable=false;
+    this.formmoddoc.reset();
+    this.formmoddoc.get('NM')?.setValue(name);
+    this.oldfileName=name;
+  }
+  openmodal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'gray modal-lg' })
+    );
+  
+  }
+  
   showTab(tabId: string,origin :Boolean): void {
     // Get all tab panels
     if(origin==true){
@@ -119,6 +228,9 @@ export class EmpComponent implements OnInit {
     else if(tabId=='avss'){
       this.listAvance();
       
+    }else if(tabId=='documents'){
+      this.listdocs();
+
     }
     
   }
@@ -138,6 +250,8 @@ export class EmpComponent implements OnInit {
     this.formAddemployes.get('FN')?.setValue(this.infosemp?.efn);
     this.formAddemployes.get('TL')?.setValue(this.infosemp?.etel);
     this.formAddemployes.get('SAL')?.setValue(this.infosemp?.esal);
+    let edf =this.datepipe.transform(this.infosemp?.edf, 'yyyy-MM-dd');
+    this.formAddemployes.get('EDF')?.setValue( edf);
    
 }
   tempmodifierimg(template: TemplateRef<any>) {
@@ -209,6 +323,7 @@ tempmodavss(template: TemplateRef<any>,id:any) {
   
 }
 tempdetailavss(id:any) {
+
   const myDialog :any= document.querySelector('#details');
   myDialog.showModal();
  this.pagesavss=1;
@@ -279,10 +394,12 @@ closed(id:any){
             nav = document.getElementById(navId),
             bodypd = document.getElementById(bodyId),
             headerpd = document.getElementById(headerId);
-
+           const logo :any= document.getElementById('logo');
+         
+  
         // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
+        if (toggle && nav && bodypd && headerpd ) {
+          
                 // show navbar
                 nav.classList.toggle('show');
                 // change icon
@@ -291,14 +408,23 @@ closed(id:any){
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-            });
+                // toggle logo size
+        if (logo.width === 0) {
+          logo.width = 180;
+          logo.height = 44;
+        } else {
+          logo.width = 0;
+          logo.height = 0;
+        }
+               
+          
         }
     };
-
+  
     showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-
+  
     
-}
+  }
 getinfobydate(e:any){
   let tabPaneActive :any= document.querySelector('.tab-pane.fade.show.active');
 
@@ -364,7 +490,16 @@ supprimeremp(){
   let text = "Attention, êtes-vous sûr de vouloir supprimer l'employé ? ";
   if (confirm(text) == true) {
    
-    
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
   this.apiservice.delEmployes(this.empid)
     .subscribe(
       (data) => {
@@ -445,6 +580,7 @@ modemp(){
       efn:this.formAddemployes.get('FN')?.value,
       edent:this.formAddemployes.get('DENT')?.value,
       esal:this.formAddemployes.get('SAL')?.value,
+      edf:this.formAddemployes.get('EDF')?.value,
       est:'encours',
     }
   if((this.Newemployes.etel).toString().length !== 8) { 
@@ -508,6 +644,7 @@ getfnById(id: any) {
 listPrimes(){
   
   this.pages=1;
+  this.inchargement=true;
   // let annee =this.datepipe.transform(this.date, 'yyyy');
   // let mois = this.datepipe.transform(this.date, 'MM');
   this.apiservice.PrimesByPIDE(this.empid).subscribe(
@@ -520,6 +657,7 @@ listPrimes(){
     }else{
       this.Primes=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -625,7 +763,16 @@ modprime(){
 delprimes(id:any){
   let text = "Attention, voulez-vous vraiment supprimer cette prime ? ";
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
+} while (code !== "2811");
     
   this.apiservice.deletePrimes(id)
     .subscribe(
@@ -657,7 +804,7 @@ listAbsence(){
   this.pages=1;
   // let annee =this.datepipe.transform(this.date, 'yyyy');
   // let mois = this.datepipe.transform(this.date, 'MM');
-  
+  this.inchargement=true;
   this.apiservice.AbsencesByAIDE(this.empid).subscribe(
     (data) => {
      
@@ -668,6 +815,7 @@ listAbsence(){
     }else{
       this.Absences=[];
     }
+    this.inchargement=false;
     },
     error => {
       console.error(error);
@@ -779,7 +927,16 @@ modabsence(){
 delabsence(id:any){
   let text = "Attention, voulez-vous vraiment supprimer cette absence ? ";
   if (confirm(text) == true) {
+     
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
    
+} while (code !== "2811");
     
   this.apiservice.deleteAbsences(id)
     .subscribe(
@@ -820,6 +977,7 @@ getMonthName(index: any): string {
 
 listAvance(){
   this.pages=1;
+  this.inchargement=true;
   // let annee =this.datepipe.transform(this.date, 'yyyy');
   // let mois = this.datepipe.transform(this.date, 'MM');
   
@@ -861,6 +1019,7 @@ listAvance(){
          
         
         }
+        this.inchargement=false;
         },
         error => {
           console.error(error);
@@ -1044,7 +1203,16 @@ delavance(id:any){
   let text = "Attention, êtes-vous sûr de vouloir supprimer ?";
   if (confirm(text) == true) {
    
-    
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
   this.apiservice.deleteAvance(id)
     .subscribe(
       (data) => {
@@ -1091,10 +1259,21 @@ this.formEmp.get('CRCHECK')?.disable();
 }
 
 deletsousemp(idavance:any,details:any,ad:any){
+ 
   let annee1 =this.datepipe.transform(ad, 'yyyy');
   let mois1 = this.datepipe.transform(ad, 'MM');
   let text = "Confirmez-vous votre choix d'annuler le montant déductible prévu pour ce mois "+mois1+'-'+annee1;
   if (confirm(text) == true) {
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
   
   let moisav = `${mois1},${annee1}`;
 let dernierItem: string = details[details.length - 1];
@@ -1123,7 +1302,7 @@ details:detailsarray,
 this.apiservice.updateAvancedetail(idavance ,newAvance)
 .subscribe(
 response => {
-
+this.closed('#details')
  this.listAvance();
 // this.getavancesoustr();
  Swal.fire({
@@ -1148,5 +1327,479 @@ error => {
   // 
  
 
+}
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
+}
+
+async calculbulletin() {
+
+  // this.openModalsal(this.templatepatien);
+  this.openmodal(this.templatepatientez);
+  const annee = this.datepipe.transform(this.date, 'yyyy');
+  const mois: any = this.datepipe.transform(this.date, 'MM');
+
+ 
+      try {
+     
+        await this.apiservice.delbulletin(this.empid, annee, mois).toPromise();
+        await this.calculsal(this.empid, annee, mois, this.infosemp?.esal,this.infosemp?.edent);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+
+async calculsal(empid :any,annee:any,mois:any,sal:any,daj:any,) {
+  try {
+  
+    await this.getSalaryInfo(empid, annee, mois,sal,daj);
+    await this.addBulletin();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async getSalaryInfo(empid: any, annee: any, mois: any,empsalaire:any,daj:any) {
+  try {
+    let datent = this.datepipe.transform(  daj, 'MM-yyyy');
+  
+    let dat = new Date(mois+'/01/'+annee);
+    let datesal  = this.datepipe.transform(  dat, 'MM-yyyy');
+    dat.setMonth( dat.getMonth()+1)
+   let annee2 = this.datepipe.transform(  dat, 'yyyy');
+  let mois2 = this.datepipe.transform(  dat, 'MM');
+  let nbrjrretard:any;
+  if(  datent===datesal){
+   nbrjrretard = this.datepipe.transform(  daj, 'dd');
+    nbrjrretard=nbrjrretard-1;
+  
+  }else{
+    nbrjrretard=0;
+  }
+  
+
+    const data = await this.apiservice.salaireinfo(empid, annee, mois,annee2,mois2).toPromise();
+    
+    if(data.abcong!=null){
+      
+      await this.calculmoiscong(empid,annee,mois,data,0,empsalaire)
+     
+    }else{ 
+      
+      this.salaire.abtaux= 30-data.ab-nbrjrretard;
+     
+      this.salaire.salaire= (empsalaire*this.salaire.abtaux)/30; // salaire ce mois ci
+      
+      this.salaire.absmontant= (empsalaire*(data.ab+nbrjrretard))/30; // absence montant
+    
+
+//verifier conger ou non
+ if(data.checkabscong==false){
+
+  this.salaire.indcongmont= empsalaire ; //conger montant
+  this.salaire.pret = data.avmcrd //pret 
+  this.salaire.sous=data.avm+data.avmcong; // (avancevantconger+avanceinconger)
+  
+}else{
+
+  this.salaire.indcongmont= 0;
+  this.salaire.pret = data.avmcrd //pret 
+  this.salaire.sous=data.avm // (avancevantconger)
+}
+
+
+ this.salaire.prim=data.primmnt;
+
+ this.salaire.sal=empsalaire;
+
+
+this.salaire.netpayer =  this.salaire.salaire + this.salaire.indcongmont+this.salaire.pret-this.salaire.sous+this.salaire.prim;
+ 
+this.salaireinfos={
+  bide:empid,
+  bannee : annee,
+  bmois : mois,
+  sal:this.salaire.sal ,
+  conger:this.salaire.indcongmont,
+  pret:this.salaire.pret,
+  sous:this.salaire.sous,
+  prim:this.salaire.prim,
+  absmont:this.salaire.absmontant,
+  netpayer:this.salaire.netpayer
+  }
+
+}
+  
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async calculmoiscong(empid:any,annee:any,mois:any,data:any,daycong:any,empsalaire:any){
+ 
+  let nbjr = data.abcong - data.ab;
+  this.salaire.abtaux =nbjr ;
+  this.salaire.salaire = (empsalaire * this.salaire.abtaux) / 30;
+  this.salaire.absmontant = (empsalaire * daycong) / 30;
+  
+  this.salaire.indcongmont = 0;
+
+
+  this.salaire.pret = data.avmcrd;
+  this.salaire.sous=0;
+  this.salaire.prim=data.primmnt;
+  this.salaire.sal =empsalaire;
+ 
+ this.salaire.netpayer =   this.salaire.salaire  +this.salaire.pret+this.salaire.prim;
+
+
+  this.salaireinfos = {
+    bide:empid,
+    bannee : annee,
+    bmois : mois,
+  sal:this.salaire.salaire ,
+  conger:0,
+  pret:this.salaire.pret,
+  sous:0,
+  prim:this.salaire.prim,
+  absmont:this.salaire.absmontant,
+  netpayer:this.salaire.netpayer 
+  };
+}
+
+async addBulletin() {
+  try {
+    
+   // console.log(this.salaireinfos);
+    const data = await this.apiservice.addbulletin(this.salaireinfos).toPromise();
+   
+      setTimeout(() => {
+        
+        this.modalRef.hide();
+      }, 1000);
+    
+         
+    
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
+listdocs() {
+  this.pagesfile=1;
+  // Vérifier si la chaîne contient "null/"
+  this.inchargement=true;
+let name='emp'+this.empid;
+  this.apiservice.listdocs(name)
+     .subscribe(
+       response => { 
+        
+        this.listfiles= response;
+        this.inchargement=false;
+       
+       },
+       error => {
+        this.listfiles=[];
+        
+       }
+     );
+}
+downloadfile(filename:any,ext:any){
+  let name='emp'+this.empid;
+  const Path: string = 'assets/profiles/docs/'+name+'/'+filename+'.'+ext;
+
+  window.open(Path, '_blank');
+
+}
+renamedoc(){
+  if(this.formmoddoc.valid){
+    this.buttondisable=true;
+    const directory ='emp'+this.empid; // Ancien nom du dossier
+    const oldName =this.oldfileName+'.'+this.ext; // Ancien nom du dossier
+    let newName = this.formmoddoc.get('NM')?.value.trim(); // Nouveau nom du dossier
+    newName=newName+'.'+this.ext;
+    
+    this.apiservice.renamefile(directory,oldName, newName)
+      .subscribe(
+        response => {
+          this.listdocs();
+          this.buttondisable=false;
+          this.modalRef.hide();
+          
+          Swal.fire({
+   
+            icon: 'success',
+            title: 'Document renommé avec succès .',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          //cancelButtonText: 'No, keep it',
+        }).then((result) => {
+      
+         
+        })
+        },
+        error => {
+          this.buttondisable=false;
+          alert('Assurez-vous que le nom du document est correctement écrit, vérifiez son existence, puis réessayer à nouveau.')
+        }
+      );}
+}
+
+deletedoc(fileName:any,ext:any){
+  let text = "Etes-vous certain de vouloir supprimer ce document : "+fileName;
+  if (confirm(text) == true) {
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
+  let name= 'emp'+this.empid;
+  let fileNamepdf: string = fileName+'.'+ext;
+  this.apiservice.deletefile(name,fileNamepdf)
+     .subscribe(
+       response => {
+        this. listdocs();
+        Swal.fire({
+ 
+          icon: 'success',
+          title: 'document supprimé avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+         
+        } 
+      })
+        
+       },
+       error => {
+        alert('Veuillez vérifier si le dossier contient des fichiers, puis réessayer !')
+       }
+     );
+}
+}
+docupload(){
+  if(this.formdoc.valid){
+    this.buttondisable=true;
+        const formData = new FormData();
+        formData.append('file', this.file);
+        let name= this.formdoc.get('NM')?.value.trim();;
+        for (const file of this.listfiles) {
+          if (file.name === name) {
+            this.buttondisable=false;
+             alert('Le nom du document existe déjà ! ')
+            
+              return;
+          }
+      }
+      let named='emp'+this.empid;
+        this.apiservice.uploadFiledoc(formData,name,named).subscribe(async res => {  
+          this.buttondisable=false;
+          this.modalRef.hide();
+          this.listdocs();
+          
+          Swal.fire({
+   
+            icon: 'success',
+            title: 'ajouté avec succès.',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          //cancelButtonText: 'No, keep it',
+        }).then((result) => {
+          
+         
+        })
+        
+        }
+        ,
+        (err) =>{ 
+          this.buttondisable=false;
+          
+          alert('Réessayer à nouveau.'); });
+
+      
+
+  }
+}
+
+listpointage(){
+  this.inchargementpoint=true;
+  this.apiservice.pointagbyeid(this.empid).subscribe(
+    (data) => {
+      this.inchargementpoint=false;
+      if(data!=null){
+      this.pointagelist=data;
+      
+     
+    }else{
+      this.pointagelist=[];
+    }
+    },
+    error => {
+      console.error(error);
+    });
+}
+
+addpointage(){
+
+  if(this.formPoint.valid){
+    this.buttondisable=true;
+  
+  //Annulé Confirmé
+    this.Newpoint={
+    "pdate":this.formPoint.get('PDATE')?.value,
+    "eid":this.empid,
+    "ptimea":this.formPoint.get('PTIMEA')?.value,
+    "ptimed":this.formPoint.get('PTIMED')?.value,
+    "pnote":this.formPoint.get('PNOTE')?.value, 
+    }
+    this.apiservice.addpointage( this.Newpoint)
+    .subscribe(
+      (data) => {
+        this.listpointage();
+        this.buttondisable=false;
+       
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'Ajouté avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+    
+        if (result.isConfirmed) {
+          this.closepoint();
+        } else{
+          this.closepoint();
+        }
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  }
+}
+getpointageinfo(id:any){
+  let data=this.pointagelist.find((item: { pid: number; }) => item.pid === id)
+  
+  let convrtdate =this.datepipe.transform(data.pdate, 'yyyy-MM-dd');
+  this.formPoint.get('PDATE')?.setValue(convrtdate);
+  this.formPoint.get('PTIMEA')?.setValue(data.ptimea);
+  this.formPoint.get('PTIMED')?.setValue(data.ptimed);
+  this.formPoint.get('PNOTE')?.setValue(data.pnote);
+ 
+
+}
+modpointage(){
+
+  if(this.formPoint.valid){
+    this.buttondisable=true;
+  
+  //Annulé Confirmé
+    this.Newpoint={
+    "pdate":this.formPoint.get('PDATE')?.value,
+    "ptimea":this.formPoint.get('PTIMEA')?.value,
+    "ptimed":this.formPoint.get('PTIMED')?.value,
+    "pnote":this.formPoint.get('PNOTE')?.value, 
+    }
+    this.apiservice.updatepointage( this.pointid,this.Newpoint)
+    .subscribe(
+      (data) => {
+        this.listpointage();
+        this.buttondisable=false;
+     
+        Swal.fire({
+   
+          icon: 'success',
+          title: 'modifiés avec succès.',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+       
+        if (result.isConfirmed) {
+          this.closepoint();
+        } else{
+          this.closepoint();
+        }
+      })
+      },
+      error => {
+        this.buttondisable=false;
+        alert("réessayer");
+    
+       
+      }); 
+
+    
+  }
+}
+
+delpointage(id:any){
+  let text = "Attention, voulez-vous vraiment supprimer ce pointage ? ";
+  if (confirm(text) == true) {
+   
+      
+  let  code:any;
+  do {
+   code = prompt("Veuillez entrer un code à 4 chiffres :");
+   if (code === null) {
+  
+    return; // Arrête l'exécution si l'utilisateur annule
+}
+   
+} while (code !== "2811");
+  this.apiservice.deletepointage(id)
+    .subscribe(
+      (data) => {
+        this.closed('#pointage')
+       this.listpointage();
+        Swal.fire({
+   
+          icon: 'success',
+          title: "La suppression du pointage a été effectuée avec succès",
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        //cancelButtonText: 'No, keep it',
+      }).then((result) => {
+        
+        if (result.isConfirmed) {
+          this.closepoint();
+        } else{
+          this.closepoint();
+        }
+      })
+      },
+      error => {
+        
+        alert("réessayer");
+    
+       
+      }); 
+    }
+    
 }
 }

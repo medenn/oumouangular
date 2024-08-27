@@ -17,6 +17,8 @@ export class EventsComponent implements OnInit {
 
   stardate:any;
   enddate:any;
+  stardaterech:any;
+  enddaterech:any;
   events:any=[];
   eventsfiltrer:any=[];
   pages=1;
@@ -25,9 +27,13 @@ export class EventsComponent implements OnInit {
   etatselected:any;
   charg= "*/../assets/charg.gif";
   excel= "*/../assets/excel.png";
+  logo= "*/../assets/logo.png";
   inchargement:any;
+  username: any;
+  role:any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe,private http: HttpClient) {
     this.randomNumber = Math.floor(Math.random() * 100) + 1;
+    this.getitem();
     const currentDate = new Date();
 // Obtenez le début du mois actuel
 this.stardate = this.datepipe.transform(  currentDate, 'yyyy-MM-dd');
@@ -43,10 +49,12 @@ this.stardate = this.datepipe.transform(  currentDate, 'yyyy-MM-dd');
             nav = document.getElementById(navId),
             bodypd = document.getElementById(bodyId),
             headerpd = document.getElementById(headerId);
-
+           const logo :any= document.getElementById('logo');
+         
+  
         // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
+        if (toggle && nav && bodypd && headerpd ) {
+          
                 // show navbar
                 nav.classList.toggle('show');
                 // change icon
@@ -55,14 +63,23 @@ this.stardate = this.datepipe.transform(  currentDate, 'yyyy-MM-dd');
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-            });
+                // toggle logo size
+        if (logo.width === 0) {
+          logo.width = 180;
+          logo.height = 44;
+        } else {
+          logo.width = 0;
+          logo.height = 0;
+        }
+               
+          
         }
     };
-
+  
     showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-
+  
     
-}
+  }
 
 tempinforendez(enote:any){
     const modal = document.getElementById('form') as HTMLElement;
@@ -92,8 +109,8 @@ tempinforendez(enote:any){
         if(data!=null){
         this.events=data;
         this.filtreretat(e);
-     
-       
+    this.stardaterech=this.stardate;
+    this.enddaterech=null;
        
       }else{
         this.events=[];
@@ -119,7 +136,8 @@ tempinforendez(enote:any){
         if(data!=null){
         this.events=data;
         this.filtreretat(e);
-     
+        this.stardaterech=this.stardate;
+        this.enddaterech=this.enddate;
        
       }else{
         this.events=[];
@@ -185,7 +203,9 @@ changeetat(id:any,st:any){
   
   this.apiservice.updateEventst(id,st).subscribe(
     (data) => {
- 
+     
+      this.stardate = this.stardaterech;
+      this.enddate=this.enddaterech;
  
       Swal.fire({
      
@@ -195,18 +215,12 @@ changeetat(id:any,st:any){
       confirmButtonText: 'OK',
       //cancelButtonText: 'No, keep it',
     })
-    if((!this.stardate && !this.enddate)|| this.stardate && this.enddate){
-      const currentDate = new Date();
-      this.stardate = this.datepipe.transform(  currentDate, 'yyyy-MM-dd');
-      this.enddate=undefined;
-      this.getlisetevents();
-  
-    }else if(this.stardate && !this.enddate){
-      this.getlisetevents();
-  
-    }
-    else if(this.stardate && this.enddate){
+    if((this.stardaterech && this.enddaterech)){
       this.getliseteventsbetweendate();
+     
+    }
+    else {
+      this.getlisetevents();
     }
     },
     error => {
@@ -270,7 +284,7 @@ const headers = ['Nom /Prénom', 'Telephone', 'Date', 'Heure','État','Notes'];
 wsData.push(headers);
 
 // Remplissage des données pnai pdaj
-this.eventsfiltrer .forEach((ev:any) => {
+this.eventsfiltrer.forEach((ev:any) => {
 
 let edate :any=this.datepipe.transform(  ev?.edate, 'dd-MM-yyyy');
   const row = [
@@ -296,5 +310,17 @@ XLSX.utils.book_append_sheet(wb, ws, wsName);
 const fileName = 'listrendezvous.xlsx';
 XLSX.writeFile(wb, fileName);
 }
-
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
+}
+profilepage(id:any){
+  const url = '/profile/' + id;
+  window.open(url, '_blank');
+}
 }

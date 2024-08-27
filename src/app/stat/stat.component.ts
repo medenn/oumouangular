@@ -13,6 +13,7 @@ import { writeFile } from 'fs';
 })
 export class StatComponent implements OnInit {
   charg= "*/../assets/charg.gif";
+  logo= "*/../assets/logo.png";
   modalRef: any;
   traits:any=[];
   stardate:any;
@@ -22,7 +23,10 @@ export class StatComponent implements OnInit {
   totalFeminin:any=0;
   totalMasculin:any=0;
   @ViewChild('templatepatientez') templatepatientez: any;
+  username: any;
+  role:any;
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) { 
+    this.getitem();
     this.setDates();
     this.listrait();
     this.statglobal();
@@ -36,10 +40,12 @@ export class StatComponent implements OnInit {
             nav = document.getElementById(navId),
             bodypd = document.getElementById(bodyId),
             headerpd = document.getElementById(headerId);
-
+           const logo :any= document.getElementById('logo');
+         
+  
         // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
+        if (toggle && nav && bodypd && headerpd ) {
+          
                 // show navbar
                 nav.classList.toggle('show');
                 // change icon
@@ -48,14 +54,23 @@ export class StatComponent implements OnInit {
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-            });
+                // toggle logo size
+        if (logo.width === 0) {
+          logo.width = 180;
+          logo.height = 44;
+        } else {
+          logo.width = 0;
+          logo.height = 0;
+        }
+               
+          
         }
     };
-
+  
     showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-
+  
     
-}
+  }
 openmodal(template: TemplateRef<any>) {
   this.modalRef = this.modalService.show(
     template,
@@ -72,7 +87,12 @@ openmodal(template: TemplateRef<any>) {
       this.exportToExcel(data)
     
     }else{
-      alert("Aucun résultat n'a été trouvé pour la période de dates demandée.")
+     
+      setTimeout(() => {
+        
+        this.modalRef.hide();
+        alert("Aucun résultat n'a été trouvé pour la période de dates demandée.")
+      }, 1000);
     }
       },
       error => {
@@ -102,10 +122,11 @@ openmodal(template: TemplateRef<any>) {
      filtrerEtat(e: any) {
       this.totalFeminin=0;
       this.totalMasculin=0;
+      
       if (this.etat === 'Tous') {
           // Totaliser le nombre de patients par pgnr
           this.statglb.forEach((item: { pgnr: string; nombre_patients: any; }) => {
-              if (item.pgnr === 'Feminin') {
+              if (item.pgnr === 'Féminin') {
                   this.totalFeminin += item.nombre_patients;
               } else if (item.pgnr === 'Masculin') {
                   this.totalMasculin += item.nombre_patients;
@@ -115,7 +136,7 @@ openmodal(template: TemplateRef<any>) {
           // Totaliser le nombre de patients par pgnr et par pst équivalant à this.etat
           this.statglb.forEach((item: { pst: any; pgnr: string; nombre_patients: any; }) => {
               if (item.pst === this.etat) {
-                  if (item.pgnr === 'Feminin') {
+                  if (item.pgnr === 'Féminin') {
                       this.totalFeminin += item.nombre_patients;
                   } else if (item.pgnr === 'Masculin') {
                       this.totalMasculin += item.nombre_patients;
@@ -210,8 +231,7 @@ openmodal(template: TemplateRef<any>) {
     const ws = XLSX.utils.aoa_to_sheet(result);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Feuille1");
-    const fileName = 'listpatients.xlsx';
-    console.log('Exporting to Excel...');
+    const fileName = 'Statistiques.xlsx';
    
     setTimeout(() => {
       XLSX.writeFile(wb, fileName);
@@ -268,5 +288,15 @@ gettraitById(id: any) {
   // Formatage des dates
   this.stardate = this.datepipe.transform(startOfMonth, 'yyyy-MM-dd');
   this.enddate = this.datepipe.transform(endOfMonth, 'yyyy-MM-dd');
+}
+
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
 }
 }

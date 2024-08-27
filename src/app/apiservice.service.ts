@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiserviceService {
   redirectUrl:any;
+  StorageItem:any;
+
   @Output() getLoggedInName: EventEmitter<any> = new EventEmitter();
   baseUrl:string = environment.apiURL;
   constructor(private http: HttpClient,private router:Router) {
@@ -24,6 +26,9 @@ export class ApiserviceService {
    }
    public patients(): Observable<any> { 
     return this.http.get<any>(this.baseUrl + '/patients');
+  }
+  public listpatient(): Observable<any> { 
+    return this.http.get<any>(this.baseUrl + '/listpatient');
   }
   addpatient(patient : any): Observable<any>{
     return this.http.post(this.baseUrl + '/addpatient',patient);
@@ -107,6 +112,10 @@ export class ApiserviceService {
     return this.http.delete<any>(this.baseUrl + '/deleteevent/' + id);
   }
 
+  deleteEventsAfterEdate(epid: any,edate:any): Observable<any> {
+    return this.http.delete<any>(this.baseUrl + '/deleteEventsAfterEdate/'+epid+'/'+edate);
+  }
+
   Traitement(): Observable<any> { 
     return this.http.get<any>(this.baseUrl + '/Traitement');
   }
@@ -158,10 +167,20 @@ export class ApiserviceService {
   Modepaiement(): Observable<any> { 
     return this.http.get<any>(this.baseUrl + '/Modepaiement');
   }
+  addModepaiement(Modepaiement: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + '/addModepaiement',Modepaiement);
+  }
+  
+  updateModepaiement(id: any, Modepaiement: any): Observable<any> {
+    return this.http.put<any>(this.baseUrl + '/updateModepaiement/' + id, Modepaiement);
+  }
 
 //paiement
 Paiement(): Observable<any> { 
   return this.http.get<any>(this.baseUrl + '/Paiements');
+}
+Paiementsnonvalide(): Observable<any> { 
+  return this.http.get<any>(this.baseUrl + '/Paiementsnonvalide');
 }
   getPaiementbypdos(pdos: any): Observable<any> {
     return this.http.get<any>(this.baseUrl + '/Paiementbypdos/' + pdos);
@@ -183,6 +202,10 @@ Paiement(): Observable<any> {
     return this.http.put<any>(this.baseUrl + '/updatePaiement/' + id,paiement);
   }
 
+  updatePaiementvalide(id: any, valide: any): Observable<any> {
+    return this.http.put<any>(this.baseUrl + '/updatePaiementvalide/' + id,valide);
+  }
+
   deletePaiement(id: any): Observable<any> {
     return this.http.delete<any>(this.baseUrl + '/deletePaiement/' + id);
   }
@@ -193,6 +216,11 @@ Paiement(): Observable<any> {
   Seancess(): Observable<any> { 
     return this.http.get<any>(this.baseUrl + '/Seancess');
   }
+
+  Seancessnonvalide(): Observable<any> { 
+    return this.http.get<any>(this.baseUrl + '/Seancessnonvalide');
+  }
+
     getSeancesbysdos(pdos: any): Observable<any> {
       return this.http.get<any>(this.baseUrl + '/Seancesbysdos/' + pdos);
     }
@@ -212,6 +240,10 @@ Paiement(): Observable<any> {
     updateSeances(id: any, paiement: any): Observable<any> {
       return this.http.put<any>(this.baseUrl + '/updateSeances/' + id,paiement);
     }
+
+    updateSeancesvalide(id: any, valide: any): Observable<any> {
+      return this.http.put<any>(this.baseUrl + '/updateSeancesvalide/' + id,valide);
+    }
   
     deleteSeances(id: any): Observable<any> {
       return this.http.delete<any>(this.baseUrl + '/deleteSeances/' + id);
@@ -219,6 +251,10 @@ Paiement(): Observable<any> {
 
 
     //dossiers
+
+    dossiersnonvalide(): Observable<any> { 
+      return this.http.get<any>(this.baseUrl + '/dossiersnonvalide');
+    }
 
     getDossiersbypid(pid: any): Observable<any> {
       return this.http.get<any>(this.baseUrl + '/Dossiersbypid/' + pid);
@@ -232,9 +268,21 @@ Paiement(): Observable<any> {
     updateDossiers(id: any, Dossier: any): Observable<any> {
       return this.http.put<any>(this.baseUrl + '/updateDossiers/' + id,Dossier);
     }
+
+    updateDrendez(id: any, Dossier: any): Observable<any> {
+      return this.http.put<any>(this.baseUrl + '/updateDrendez/' + id,Dossier);
+    }
   
     deleteDossiers(id: any): Observable<any> {
       return this.http.delete<any>(this.baseUrl + '/deleteDossiers/' + id);
+    }
+
+    updateDvalide(id: any, valide: any): Observable<any> {
+      return this.http.put<any>(this.baseUrl + '/updateDvalide/' + id,valide);
+    }
+
+    dossierparassurance(dassurid:any,startDate: any, endDate: any): Observable<any> {
+      return this.http.get<any>(this.baseUrl + '/dossierparassurance/'+dassurid+'/'+ startDate+'/'+endDate);
     }
   
 
@@ -363,11 +411,161 @@ Paiement(): Observable<any> {
   }
 
   stat(date1:any,date2:any): Observable<any>{
-    return this.http.get(this.baseUrl + '/stat'+date1+'/'+date2);
+    return this.http.get(this.baseUrl + '/stat/'+date1+'/'+date2);
   }
 
   statglobal(): Observable<any>{
     return this.http.get(this.baseUrl + '/statglobal');
   }
+
+  //consultation
+
+  getconsultationbypid(pid: any): Observable<any> {
+    return this.http.get<any>(this.baseUrl + '/Consultationbypid/' + pid);
+  }
+
+
+  addConsultation(Consultation: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + '/addConsultation', Consultation);
+  }
+
+  updateConsultation(id: any, Consultation: any): Observable<any> {
+    return this.http.put<any>(this.baseUrl + '/updateConsultation/' + id,Consultation);
+  }
+
+  deleteConsultation(id: any): Observable<any> {
+    return this.http.delete<any>(this.baseUrl + '/deleteConsultation/' + id);
+  }
+// events create
+
+createevent(ndos:any,idp:any,datedb:any): Observable<any>{
+  return this.http.get(this.baseUrl + '/createevent/'+ndos+'/'+idp+'/'+datedb);
+}
+
+// pointage
+
+pointagebyid(id: any): Observable<any> {
+  return this.http.get<any>(this.baseUrl + '/pointagebyid/' + id);
+}
+
+pointagbyeid(eid: any): Observable<any> {
+  return this.http.get<any>(this.baseUrl + '/pointagbyeid/' + eid);
+}
+
+pointagebydate(pdate: any): Observable<any> {
+  return this.http.get<any>(this.baseUrl + '/pointagebydate/' + pdate);
+}
+
+
+addpointage(pointage: any): Observable<any> {
+  return this.http.post<any>(this.baseUrl + '/addpointage', pointage);
+}
+
+updatepointage(id: any, pointage: any): Observable<any> {
+  return this.http.put<any>(this.baseUrl + '/updatepointage/' + id,pointage);
+}
+
+
+deletepointage(id: any): Observable<any> {
+  return this.http.delete<any>(this.baseUrl + '/deletepointage/' + id);
+}
+  login(username:any,password:any): Observable<any>{
+    return this.http.get<any>(this.baseUrl + '/login/'+username+'/'+password).pipe(map(Users => {
+
+      //this.setToken(username);
+      // Exemple d'utilisation
+const key = "token";
+const value = username;
+const role=Users.role;
+const ttl = 120 * 60 * 1000; // 15 minutes en millisecondes
+
+// Stocker une donnée avec expiration
+      this.setItemWithExpiry(key, value,role, ttl);
+
+      this.getLoggedInName.emit(true);
+      
+      }));
+  }
+
+  //token
+setToken(token: string) {
+  localStorage.setItem('token', token);
+  }
   
+  getToken() {
+  return localStorage.getItem('token');
+  }
+  deleteToken() {
+  localStorage.removeItem('token');
+  this.router.navigate(['/login']);
+  }
+
+  isLoggedIn() {
+    const usertoken = this.getToken();
+    if (usertoken != null) {
+      this.StorageItem = JSON.parse(usertoken);
+  const now = Date.now(); // Obtenir la timestamp actuelle
+
+  // Vérifier si la donnée est expirée
+  if (now > this.StorageItem.expiry) {
+    localStorage.removeItem(usertoken);
+    this.router.navigate(['/login']);
+    return false;
+  }else{
+    return true
+  }
+   
+    
+    }
+    this.router.navigate(['/login']);
+    return false;
+    }
+
+    // Fonction pour stocker une donnée avec expiration
+setItemWithExpiry(key: string, value: string, role: string,ttl: number): void {
+  const now = Date.now(); // Obtenir la timestamp actuelle
+ this.StorageItem = {
+    value: value,
+    role:role,
+    expiry: now + ttl, // Définir l'expiration en ajoutant ttl à la timestamp actuelle
+  };
+  localStorage.setItem(key, JSON.stringify(this.StorageItem));
+}
+
+
+//Fonction pour récupérer une donnée
+getItemWithExpiry(key: string): any | null {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+
+ this.StorageItem = JSON.parse(itemStr);
+  const now = Date.now(); // Obtenir la timestamp actuelle
+ 
+  // Vérifier si la donnée est expirée
+  if (now > this.StorageItem.expiry) {
+    localStorage.removeItem(key);
+    return null;
+   
+  }else{
+  }
+
+  return this.StorageItem.value;
+}
+
+getrole(key: string): any | null {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+
+ this.StorageItem = JSON.parse(itemStr);
+ 
+
+  return this.StorageItem.role;
+}
+
+
+
 }

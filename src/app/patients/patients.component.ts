@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -16,6 +16,7 @@ import { DatePipe } from '@angular/common';
 export class PatientsComponent implements OnInit {
   charg= "*/../assets/charg.gif";
   excel= "*/../assets/excel.png";
+  logo= "*/../assets/logo.png";
     modalRef: any;
     buttondisable=false;
     formAddpatient = new FormGroup({
@@ -35,14 +36,71 @@ export class PatientsComponent implements OnInit {
       pages=1;
       tel:any='';
       randomNumber:any;
+      username:any;
+      role:any;
+      datapatient:any=[];
+      keyword = 'name';
+      @ViewChild('auto') auto: any;
+      traitselected:any;
+      listtrait:any=[];
+      traiid:any='Tous';
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe ) {
+  this.getitem();
     this.listpatient();
+    this.listrait();
     this.randomNumber = Math.floor(Math.random() * 100) + 1;
    }
 
   ngOnInit(): void {
    
   }
+
+  traitchange(e:any){
+    this.traiid=e.item.id;
+   
+    this.listpatientfilitred();
+   }
+  
+   traitdelete(e:any){
+    this.traiid="Tous";
+    this.listpatientfilitred();
+    
+   }
+
+  selectEvent(e:any) {
+ 
+    const url = '/profile/' + e.item.id;
+    window.open(url, '_blank');
+
+
+ }
+
+ close(){
+  // this.auto.close();
+}
+
+clear(): void {
+    
+  this.auto.clear();
+  
+ 
+}  
+
+customFilter2 = function(data2: any[], query2: string): any[] {
+  return data2.filter(x => x.name && x.name.toLowerCase().includes(query2.toLowerCase()));
+};
+
+onChangeSearch(val: string) {
+  // fetch remote data from here
+  // And reassign the 'data' which is binded to 'data' property.
+}
+
+onFocused(e:any){
+    
+}
+
+
+
   tempaddpatien(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(
       template,
@@ -51,31 +109,42 @@ export class PatientsComponent implements OnInit {
     this.formAddpatient.reset();
     this.buttondisable=false;
 }
-  toggleNavbar() {
-    const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
-        const toggle = document.getElementById(toggleId),
-            nav = document.getElementById(navId),
-            bodypd = document.getElementById(bodyId),
-            headerpd = document.getElementById(headerId);
+toggleNavbar() {
+  const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
+      const toggle = document.getElementById(toggleId),
+          nav = document.getElementById(navId),
+          bodypd = document.getElementById(bodyId),
+          headerpd = document.getElementById(headerId);
+         const logo :any= document.getElementById('logo');
+       
 
-        // Validate that all variables exist
-        if (toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
-                // show navbar
-                nav.classList.toggle('show');
-                // change icon
-                toggle.classList.toggle('bx-x');
-                // add padding to body
-                bodypd.classList.toggle('body-pd');
-                // add padding to header
-                headerpd.classList.toggle('body-pd');
-            });
-        }
-    };
+      // Validate that all variables exist
+      if (toggle && nav && bodypd && headerpd ) {
+        
+              // show navbar
+              nav.classList.toggle('show');
+              // change icon
+              toggle.classList.toggle('bx-x');
+              // add padding to body
+              bodypd.classList.toggle('body-pd');
+              // add padding to header
+              headerpd.classList.toggle('body-pd');
+              // toggle logo size
+      if (logo.width === 0) {
+        logo.width = 180;
+        logo.height = 44;
+      } else {
+        logo.width = 0;
+        logo.height = 0;
+      }
+             
+        
+      }
+  };
 
-    showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
+  showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
 
-    
+  
 }
 
 addpatient(){
@@ -118,10 +187,10 @@ addpatient(){
 
 async listpatient() {
   this.inchargement = true;
-  
+  this.datapatient=[];
   try {
       const data = await new Promise((resolve, reject) => {
-          this.apiservice.patients().subscribe(
+          this.apiservice.listpatient().subscribe(
               (data) => {
                   resolve(data);
                 
@@ -134,24 +203,59 @@ async listpatient() {
       });
       this.inchargement = false;
       this.listpatients = data;
+      this.listpatients.sort((a: { pdaj: string; pid: number }, b: { pdaj: string; pid: number }) => {
+        const dateA = new Date(a.pdaj).getTime();
+        const dateB = new Date(b.pdaj).getTime();
+    
+        // Comparaison par `pdaj` du plus récent au plus ancien
+        if (dateA > dateB) return -1;
+        if (dateA < dateB) return 1;
+    
+        // Si `pdaj` est le même, comparaison par `pid`
+        return a.pid - b.pid;
+    });
+    
+      for (var i = 0; i < this.listpatients.length; i++) {
+        this.datapatient.push({ id: this.listpatients[i].pid, name: this.listpatients[i].pnom});
+      }
+     
       this.listpatientfilitred();
    
   } catch (error) {
       console.error(error);
-      this.inchargement = false;
+    
+  }
+}
+listpatientfilitred() {
+  this.pages = 1;
+
+  if (this.stpatient == 'encours') {
+      if (this.traiid == 'Tous') {
+          this.listpatientFiltree = this.listpatients.filter((patient: { pst: string }) => 
+              patient.pst == 'encours'
+          );
+      } else {
+          this.listpatientFiltree = this.listpatients.filter((patient: { pst: string, details: string[] | null }) => 
+              patient.pst == 'encours' && 
+              patient.details !== null && 
+              patient.details.some(detail => detail.startsWith(this.traiid + ','))
+          );
+      }
+  } else {
+      if (this.traiid == 'Tous') {
+          this.listpatientFiltree = this.listpatients.filter((patient: { pst: string }) => 
+              patient.pst != null
+          );
+      } else {
+          this.listpatientFiltree = this.listpatients.filter((patient: { pst: string, details: string[] | null }) => 
+              patient.pst != null && 
+              patient.details !== null && 
+              patient.details.some(detail => detail.startsWith(this.traiid + ','))
+          );
+      }
   }
 }
 
-listpatientfilitred(){
-if(this.stpatient=='encours'){
-  this.listpatientFiltree = this.listpatients.filter((patient: { pst: String  }) => 
-    (patient.pst=='encours')
-);
-}else{
-this.listpatientFiltree =  this.listpatients.filter((patient: { pst: String  }) => 
-(patient.pst!=null)
-);}
-}
 
 stchanged(e:any){
   this.stpatient=e;
@@ -171,7 +275,8 @@ search(){
     (data) => {
      this.tel='';
       let id=data.pid;
-      this.router.navigate(['/profile/'+id]);
+      const url = '/profile/' + id;
+      window.open(url, '_blank');
      
     },
     error => {
@@ -179,6 +284,7 @@ search(){
      
      
     }); 
+  
 }
 
 error(){
@@ -234,5 +340,27 @@ const fileName = 'listpatients.xlsx';
 XLSX.writeFile(wb, fileName);
 }
 
+getitem(){
+  let t:any='token';
+  this.username=this.apiservice.getItemWithExpiry(t);
+  this.role=this.apiservice.getrole(t);
+ 
+}
+logout(){
+  this.apiservice.deleteToken();
+}
 
+listrait(){
+ 
+  this.apiservice.Traitement().subscribe(
+    (data) => {
+      this.listtrait  = data.map((trai: { tid: any; tnm: any; }) => {
+        return { id: trai.tid, name: trai.tnm };
+    });
+     
+    },
+    error => {
+      console.error(error);
+    });
+}
 }
