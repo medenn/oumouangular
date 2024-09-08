@@ -46,6 +46,10 @@ export class ApiserviceService {
     return this.http.post(this.baseUrl + '/uploadFile/'+id,formData);
   }
 
+  modpatientimg(img : any,id:any): Observable<any>{
+    return this.http.put(this.baseUrl + '/modpatientimg/'+id+'/'+img,null);
+  }
+
   //
 
 
@@ -305,6 +309,9 @@ Paiementsnonvalide(): Observable<any> {
     }
     modEmployest(st : any,id:any): Observable<any>{
       return this.http.put(this.baseUrl + '/modEmployest/'+id+'/'+st,null);
+    }
+    modEmployeimg(img: any,id:any): Observable<any>{
+      return this.http.put(this.baseUrl + '/modEmployeimg/'+id+'/'+img,null);
     }
     delEmployes(id : any): Observable<any>{
       return this.http.delete(this.baseUrl + '/delEmployes/'+id);

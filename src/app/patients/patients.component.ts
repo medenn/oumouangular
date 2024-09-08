@@ -159,6 +159,7 @@ addpatient(){
       padrss:this.formAddpatient.get('ADRS')?.value,
       pdaj:currentDate,
       pst:'encours',
+      pimg:'0.png'
     }
   if((this.Newpatient.ptel).toString().length !== 8) { 
     alert("le numéro de téléphone doit être de 8 chiffres");

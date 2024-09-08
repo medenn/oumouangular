@@ -158,7 +158,7 @@
                                   <th scope="row">
                                     <div class="media align-items-center">
                                       <a (click)="profilepage(emp.eid)"  class="avatar rounded-circle mr-3">
-                                        <img alt="Image placeholder"src="assets/profiles/emps/img{{emp.eid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                        <img alt="Image placeholder"src="assets/profiles/emps/img{{emp.eimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                       </a>
                                       <div class="media-body">
                                         <span class="mb-0 text-sm"  [ngClass]="{'strikethrough': emp.est !== 'encours'}">{{emp.enom}}</span>
@@ -411,7 +411,7 @@
                                 <th scope="row">
                                   <div class="media align-items-center">
                                     <a (click)="profilepage(point.eid)"  class="avatar rounded-circle mr-3">
-                                      <img alt="Image placeholder"src="assets/profiles/emps/img{{point.eid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                      <img alt="Image placeholder"src="assets/profiles/emps/img{{point.eimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                     </a>
                                     <div class="media-body">
                                       <span class="mb-0 text-sm"  >{{point.enom}}</span>

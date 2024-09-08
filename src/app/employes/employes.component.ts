@@ -299,6 +299,7 @@ addempl(){
       edent:this.formAddemployes.get('DENT')?.value,
       esal:this.formAddemployes.get('SAL')?.value,
       est:'encours',
+      eimg:'0.png'
     }
   if((this.Newemployes.etel).toString().length !== 8) { 
     alert("le numéro de téléphone doit être de 8 chiffres");

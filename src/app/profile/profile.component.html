@@ -1161,7 +1161,7 @@
   
   <tabset  [justified]="true" >
          
-    <tab id="seance" (selectTab)="selectseance()" [active]="true"  >   <ng-template  tabHeading>
+    <tab id="seance" (selectTab)="selectseance()"   >   <ng-template  tabHeading>
       <span class="title">Les Séances </span>
     </ng-template>
 <div class="btm"><br></div>
@@ -1250,7 +1250,7 @@
     </tab>
 
 
-<tab   (selectTab)="selectpaie()" >   <ng-template  tabHeading>
+<tab id="paie"  (selectTab)="selectpaie()" >   <ng-template  tabHeading>
       <span class="title">les Paiements </span>
     </ng-template>
 
@@ -1387,6 +1387,11 @@ formControlName="SN"
                   <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
             </div>
             <div class="col" >
+              <label class="labelmod" >Statut Paiement<span>*</span></label>
+              <select  formControlName="SPAYER" >
+                <option   value=false >Impayé</option>
+                <option   value=true >Payé</option>
+              </select>
             </div>
            
           </div>
@@ -1468,16 +1473,31 @@ formControlName="SN"
                           <textarea formControlName="NOTE" cols="10" rows="5"></textarea>
                     </div>
                     <div class="col" >
-                      <label class="labelmod" >Validation <span>*</span></label>
-                      <select  [attr.disabled]="this.role !== 'superadmin' ? true : null"  formControlName="SVALIDE" >
-                        <option   value=false >Encours</option>
-                        <option   value=true >Validé</option>
+                      <label class="labelmod" >Statut Paiement<span>*</span></label>
+                      <select  formControlName="SPAYER" >
+                        <option   value=false >Impayé</option>
+                        <option   value=true >Payé</option>
                       </select>
                     </div>
                    
                   </div>
                  
-                     
+                  <div class="row">
+                        
+              
+               
+                <div class="col" >
+                  <label class="labelmod" >Validation <span>*</span></label>
+                  <select  [attr.disabled]="this.role !== 'superadmin' ? true : null"  formControlName="SVALIDE" >
+                    <option   value=false >Encours</option>
+                    <option   value=true >Validé</option>
+                  </select>
+                </div>
+                <div class="col" >
+                    
+                </div>
+               
+              </div>        
               
               
                      

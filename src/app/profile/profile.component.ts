@@ -44,6 +44,7 @@ export class ProfileComponent implements OnInit {
     NOTE: new FormControl('' ),
     SN:new FormControl('', Validators.required ),
     SVALIDE: new FormControl('' ),
+    SPAYER: new FormControl('' ),
 
   });
 
@@ -186,14 +187,18 @@ this.getitem();
   }else if (origin === false) {
     // Activer directement les onglets "seance" et "dossier"
     const seancePanel = document.querySelector('#seance');
+    const paiePanel :any= document.querySelector('#paie');
     
     if (seancePanel) {
       seancePanel.classList.add('show', 'active');
+      paiePanel.classList.remove('show', 'active'); // Désactiver "paie"
     }
     const seanceLink = document.querySelector('[data-tab="seance"]');
+    const paieLink:any = document.querySelector('[data-tab="paie"]');
 
     if (seanceLink) {
       seanceLink.classList.add('active');
+      paieLink.classList.remove('active'); // Désactiver le lien "paie"
     }
    
   }
@@ -640,7 +645,7 @@ patientinfo(){
   this.apiservice.patientsid(this.patid).subscribe(
     (data) => {
       const randomNumber = Math.floor(Math.random() * 100) + 1;
-      this.imgurl='assets/profiles/img'+data.pid+'.png?random='+randomNumber;
+      this.imgurl='assets/profiles/img'+data.pimg+'?random='+randomNumber;
       this.infospat=data;
       this.patst=data.pst;
 },
@@ -842,19 +847,23 @@ supprimerrendezvous(){
     
   
 }
-imgupload(){
+async imgupload(){
   if(this.formimg.valid){
     this.buttondisable=true;
   const formData = new FormData();
   formData.append('file', this.file);
   let imgname="img"+this.patid;
+  const fileName = this.file.name;
+  let fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+  fileExtension=this.patid+'.'+fileExtension;
   this.apiservice.uploadfile(formData,imgname).subscribe(async res => {  
 
    // let imgdiv :any = document.getElementById('imgp');
    const randomNumber = Math.floor(Math.random() * 100) + 1;
-   this.imgurl='assets/profiles/img'+this.patid+'.png?random='+randomNumber;
+   this.imgurl='assets/profiles/img'+fileExtension+'?random='+randomNumber;
    this.modalRef.hide();
    this.buttondisable=false;
+   const data1 = await this.apiservice. modpatientimg(fileExtension,this.patid).toPromise();
         Swal.fire({
    
           icon: 'success',
@@ -1924,7 +1933,8 @@ addseance(){
       spid:this.patid,
       sdos:this.dossierid,
       details:details,
-      svalide:false
+      svalide:false,
+      spayer:this.formAddseance.get('SPAYER')?.value
     }
 
     this.apiservice.addSeance( this.Newseance)
@@ -1963,6 +1973,7 @@ getseanceinfo(id:any){
  this.formAddseance.get('DT')?.setValue(sdate);
  this.formAddseance.get('NOTE')?.setValue(data.snote);
  this.formAddseance.get('SVALIDE')?.setValue(data.svalide);
+ this.formAddseance.get('SPAYER')?.setValue(data.spayer);
  let details :any=data.details;
 
     let listtraitseances: any = details.map((item: string) => {
@@ -1998,6 +2009,7 @@ modseance(){
       sdos:this.dossierid,
       details:details,
       svalide:this.formAddseance.get('SVALIDE')?.value,
+      spayer:this.formAddseance.get('SPAYER')?.value
     }
 
     this.apiservice.updateSeances(this.seancesid, this.Newseance)

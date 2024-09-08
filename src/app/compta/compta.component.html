@@ -68,9 +68,14 @@
                 <br>
                  <div class="card">
                                           <div class="row">
-                                              <div class="col-md-4"> <label>Date Début</label> <input [(ngModel)]="this.stardate" type="date" class="form-control"> </div>
-                                              <div class="col-md-4"> <label>Date Fin</label> <input [(ngModel)]="this.enddate" type="date" class="form-control"> </div>
-                                              <div class="col-md-4"> <label style="height: 47px;"> </label><button (click)="chercherseances()" class="btn btn-primary  w-20"><i class="fa fa-search ml-2"></i></button> </div>
+                                              <div class="col-md-3"> <label>Date Début</label> <input [(ngModel)]="this.stardate" type="date" class="form-control"> </div>
+                                              <div class="col-md-3"> <label>Date Fin</label> <input [(ngModel)]="this.enddate" type="date" class="form-control"> </div>
+                                              <div class="col-md-3"> <label style="height: 47px;"> </label><button (click)="chercherseances()" class="btn btn-primary  w-20"><i class="fa fa-search ml-2"></i></button> </div>
+                                              <div class="col-md-2"> <label > Statut Paiement</label> <select [(ngModel)]="payeselected"  (ngModelChange)="filtreretatseance($event)"    >
+                                                <option  value="Tous" >Tous</option>
+                                                <option  value="true" >Payé</option>
+                                                <option  value="false" >Impayé</option>
+                                              </select></div>
                                           </div>
                                       </div>
                         
@@ -84,8 +89,8 @@
                       
                       <div class="card-header border-0">
 
-                        <h3 *ngIf="!seanceinvalide" class="mb-0">Les Séances  [{{this.seances.length}}]</h3>
-                        <h3 style="color:#dc3545" *ngIf="seanceinvalide" class="mb-0">Liste des séances à valider  [{{this.seances.length}}]</h3>
+                        <h3 *ngIf="!seanceinvalide" class="mb-0">Les Séances  [{{this.seancesfiltrer.length}}]</h3>
+                        <h3 style="color:#dc3545" *ngIf="seanceinvalide" class="mb-0">Liste des séances à valider  [{{this.seancesfiltrer.length}}]</h3>
                       </div>
                       <div  *ngIf="inchargement" class="chargcontainer">
                         <div class="image-container">
@@ -107,11 +112,11 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr *ngFor="let seance of seances | paginate: {id:'pagination1', itemsPerPage: 20, currentPage: pages}">
+                            <tr *ngFor="let seance of seancesfiltrer  | paginate: {id:'pagination1', itemsPerPage: 20, currentPage: pages}">
                               <th scope="row">
                                 <div class="media align-items-center">
                                   <a [routerLink]="['/profile', seance.spid]" target="_blank" class="avatar rounded-circle mr-3">
-                                    <img alt="Image placeholder"src="assets/profiles/img{{seance.spid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                    <img alt="Image placeholder"src="assets/profiles/img{{seance.pimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                   </a>
                                   <div class="media-body">
                                     <span class="mb-0 text-sm"><a >{{seance.pnom }}</a></span>
@@ -125,12 +130,20 @@
                                 </span>  
                               </td>
                               <td>
+                                <span class="badge badge-dot mr-4">
+                                  <i [ngClass]="seance.spayer ? 'bg-success' : 'bg-warning'"></i> 
+                                  {{ seance.spayer ? 'payé' : 'impayé' }} 
+                                </span>
+<br>                                
                                 <ng-container *ngFor="let detail of seance.details; let i = index">
                                 <span class="badge badge-dot mr-4">
                                   <i class="bg-success"></i> {{ gettraitById(detail.split(',')[0]) }} [{{ detail.split(',')[1] }}]
                                 </span>
                                 <br>
                                 </ng-container>
+                                
+                                
+                                <br>
                               </td>
                               <td *ngIf="seanceinvalide && this.role=='superadmin'" >
                                 <div class="primary-btn">
@@ -221,7 +234,7 @@
                                                                         <th scope="row">
                                                                           <div class="media align-items-center">
                                                                             <a *ngIf="typepaiement=='in'" [routerLink]="['/profile', paie.ppid]" target="_blank" class="avatar rounded-circle mr-3">
-                                                                              <img alt="Image placeholder"src="assets/profiles/img{{paie.ppid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                                                              <img alt="Image placeholder"src="assets/profiles/img{{paie.pimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                                                             </a>
                                                                             <div class="media-body">
                                                                               <span *ngIf="typepaiement=='in'" class="mb-0 text-sm"><a >{{paie.pnom }}</a></span>
@@ -305,7 +318,7 @@
                         <th scope="row">
                           <div class="media align-items-center">
                           <a  [routerLink]="['/profile', dos.dpid]" target="_blank" class="avatar rounded-circle mr-3">
-                            <img alt="Image placeholder"src="assets/profiles/img{{dos.dpid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                            <img alt="Image placeholder"src="assets/profiles/img{{dos.pimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                           </a>
                           <div class="media-body">
                             <span  class="mb-0 text-sm"><a >{{dos.pnom }}</a></span>

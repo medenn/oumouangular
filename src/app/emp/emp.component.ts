@@ -443,7 +443,7 @@ empinfo(){
   this.apiservice.Employesid(this.empid).subscribe(
     (data) => {
       const randomNumber = Math.floor(Math.random() * 100) + 1;
-      this.imgurl='assets/profiles/emps/img'+data.eid+'.png?random='+randomNumber;
+      this.imgurl='assets/profiles/emps/img'+data.eimg+'?random='+randomNumber;
       this.infosemp=data;
       this.empst=data.est;
 },
@@ -530,19 +530,24 @@ supprimeremp(){
     
   
 }
-imgupload(){
+async imgupload(){
   if(this.formimg.valid){
     this.buttondisable=true;
   const formData = new FormData();
   formData.append('file', this.file);
   let imgname="img"+this.empid;
+  const fileName = this.file.name;
+  let fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+  fileExtension=this.empid+'.'+fileExtension;
+  
   this.apiservice.uploadFileEmp(formData,imgname).subscribe(async res => {  
 
    // let imgdiv :any = document.getElementById('imgp');
    const randomNumber = Math.floor(Math.random() * 100) + 1;
-   this.imgurl='assets/profiles/emps/img'+this.empid+'.png?random='+randomNumber;
+   this.imgurl='assets/profiles/emps/img'+fileExtension+'?random='+randomNumber;
    this.modalRef.hide();
    this.buttondisable=false;
+   const data1 = await this.apiservice. modEmployeimg(fileExtension,this.empid).toPromise();
         Swal.fire({
    
           icon: 'success',
@@ -977,7 +982,8 @@ getMonthName(index: any): string {
 
 listAvance(){
   this.pages=1;
-  this.inchargement=true;
+  //this.inchargement=true;
+
   // let annee =this.datepipe.transform(this.date, 'yyyy');
   // let mois = this.datepipe.transform(this.date, 'MM');
   
@@ -1019,7 +1025,7 @@ listAvance(){
          
         
         }
-        this.inchargement=false;
+        //this.inchargement=false;
         },
         error => {
           console.error(error);

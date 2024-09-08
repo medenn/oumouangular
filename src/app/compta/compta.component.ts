@@ -42,6 +42,7 @@ export class ComptaComponent implements OnInit {
 inchargement:any;
 paiementfiltrer:any=[];
 modeselected='Tous';
+payeselected='Tous';
 seances:any=[];
 traits:any=[];
 username:any;
@@ -50,6 +51,7 @@ seanceinvalide:any;
 paiementinvalide:any;
 dossiers:any=[];
 note:any;
+seancesfiltrer:any=[];
 
   constructor(private modalService: BsModalService,private router:Router,private route: ActivatedRoute,private apiservice: ApiserviceService,private datepipe: DatePipe) {
     this.randomNumber = Math.floor(Math.random() * 100) + 1;
@@ -517,6 +519,16 @@ filtreretat(e:any){
   this.paiementfiltrer.total = this.paiementfiltrer.reduce((sum: any, paie: { pmnt: any; }) => sum + paie.pmnt, 0);
 }
 
+filtreretatseance(e:any){
+  this.seancesfiltrer = this.seances.filter((seance: { spayer: boolean }) => {
+    if (this.payeselected === 'Tous') {
+      return true;
+    } else {
+      return seance.spayer === (this.payeselected === 'true');
+    }
+  });
+}
+
 changetype(type:any){
   this.pages=1;
   this.typepaiement=type;
@@ -563,6 +575,7 @@ getlastseances(){
   this.stardate=null;
 this.enddate=null;
   this.pages=1;
+  this.payeselected='Tous';
   this.seanceinvalide=false;
   this.inchargement=true;
   let e:any;
@@ -576,6 +589,8 @@ this.enddate=null;
     }else{
       this.seances=[];
     }
+    let e:any;
+    this.filtreretatseance(e);
     },
     error => {
       this.seances=[];
@@ -589,6 +604,7 @@ this.enddate=null;
   this.pages=1;
   this.seanceinvalide=true;
   this.inchargement=true;
+  this.payeselected='Tous';
   let e:any;
   this.apiservice.Seancessnonvalide().subscribe(
     (data) => {
@@ -600,6 +616,8 @@ this.enddate=null;
     }else{
       this.seances=[];
     }
+ 
+    this.filtreretatseance(e);
     },
     error => {
       this.seances=[];
@@ -612,6 +630,7 @@ getlisetseances(){
   this.seanceinvalide=false;
   this.inchargement=true;
   let e:any;
+  this.payeselected='Tous';
   this.apiservice.getSeancesbydate(this.stardate).subscribe(
     (data) => {
     
@@ -623,6 +642,8 @@ getlisetseances(){
       this.seances=[];
 
     }
+   
+    this.filtreretatseance(e);
     },
     error => {
       this.seances=[];
@@ -636,7 +657,8 @@ getlisetseancebetweendate(){
   this.inchargement=true;
   this.seanceinvalide=false;
   let e:any;
-  this.apiservice.getPaiementtwodate(this.stardate,this.enddate).subscribe(
+  this.payeselected='Tous';
+  this.apiservice.getSeancestwodate(this.stardate,this.enddate).subscribe(
     (data) => {
       this.inchargement=false;
       if(data!=null){
@@ -644,6 +666,8 @@ getlisetseancebetweendate(){
     }else{
       this.seances=[];
     }
+  
+    this.filtreretatseance(e);
     },
     error => {
       this.seances=[];

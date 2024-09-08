@@ -188,7 +188,7 @@
                                   <th scope="row">
                                     <div class="media align-items-center">
                                       <a (click)="profilepage(pat.pid)"  class="avatar rounded-circle mr-3">
-                                        <img alt="Image placeholder " src="assets/profiles/img{{pat.pid}}.png?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
+                                        <img alt="Image placeholder " src="assets/profiles/img{{pat.pimg}}?random={{randomNumber}}"  onerror="this.src='assets/profiles/defaut.png'">
                                       </a>
                                       <div class="media-body">
                                         <span  class="mb-0 text-sm"><a   [ngClass]="{'strikethrough': pat.pst !== 'encours'}">{{pat.pnom }}</a> </span>
